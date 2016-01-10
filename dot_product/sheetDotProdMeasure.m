@@ -4,7 +4,7 @@ function sheetDotProdMeasure(neuronID, movies)
     patternNumber = NEURON_ELE_MAP(neuronID);
     clusterFileName = NEURON_CLUST_FILE_MAP(neuronID);
     thresholds = 5:5:40;
-    f = figure()
+    f = figure();
     set(gcf,'PaperUnits','centimeters','PaperPosition',[0 0 40 25])
     set(gcf, 'InvertHardCopy', 'off');
 

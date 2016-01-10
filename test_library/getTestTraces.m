@@ -1,6 +1,6 @@
 function [ tracesDict ] = getTestTraces(  )
 
-tracesMovieEleDict = createTestTracesDict();
+tracesMovieEleDict = createTestTracesMovieEleDict();
 labelKeys = keys(tracesMovieEleDict);
 tracesDict = containers.Map;
 for label = labelKeys

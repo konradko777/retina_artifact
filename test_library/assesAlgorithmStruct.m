@@ -1,20 +1,26 @@
-function traces = assesAlgorithmStruct( algoHandle, label )
-    movieEleDict = createTestTracesDict();
+function assesAlgorithmStruct( algoHandle, movieEleDict)
     tracesDict = getTestTraces();
-    traces = tracesDict(label);
-    movieEle = movieEleDict(label);
-    algoArtIDs = algoHandle(traces); %% tutaj resultStruct
-    
-    clustFile = createClustFileName(movieEle(2));
-    patternNo = movieEle(2); %patternNo moze byc odmienny, zczytac z global recording ele...
-    clustArtIDs = getArtIDsFromClustFile(clustFile, patternNo, movieEle(1));
-    figure
-    subplot(3,1,1)
-    plotArtifacts(traces, clustArtIDs)
-    subplot(3,1,2)
-    plotArtifacts(traces, algoArtIDs)
-    subplot(3,1,3)
-    plotComparison(clustArtIDs, algoArtIDs);
+    for labelCell = keys(movieEleDict)
+        label = labelCell{1};
+        traces = tracesDict(label);
+        movieEle = movieEleDict(label);
+        resultStruct = algoHandle(traces); %% tutaj resultStruct
+
+        clustFile = createClustFileName(movieEle(2));
+        patternNo = movieEle(2); %patternNo moze byc odmienny, zczytac z global recording ele...
+        clustArtIDs = getArtIDsFromClustFile(clustFile, patternNo, movieEle(1));
+        figure
+        suptitle(label)
+        subplot(3,1,1)
+        title('Cluster File')
+        plotArtifacts(traces, clustArtIDs)
+        subplot(3,1,2)
+        title('nDRWPruning Algo')
+        plotTracesFromResultStruct(traces, resultStruct)
+        subplot(3,1,3)
+        title('Comparison')
+        plotComparison(clustArtIDs, resultStruct);
+    end
 end
 
 
@@ -27,12 +33,14 @@ end
 function plotComparison(clustArtIDs, algoStruct)
     imgMatrix = zeros(2,50);
     imgMatrix(1, clustArtIDs) = 1;
-    imgMatrix(2, algoArtIDs) = 1;
+    imgMatrix(2, algoStruct.artifactIDs) = 1;
+    imgMatrix(2, algoStruct.excluded) = -1;
     %dodac -1 dla wykluczonych
     image(imgMatrix, 'CDataMapping', 'scaled');
     caxis([-1 1])
+    myColormap = [0 0 0; 0 1 0; 1 0 0];
     daspect([1 1 1])
-    colormap('gray');
+    colormap(myColormap);
     hold on;
 %     set(gca,'Ydir','Normal')
     
@@ -51,4 +59,12 @@ function plotArtifacts(traces, artefactIDs)
     hold on
     plot(traces', 'color', 'g')
     plot(traces(artefactIDs, :)', 'color', 'r')
+end
+
+function plotTracesFromResultStruct(traces, resultStruct)
+    hold on
+    plot(traces', 'color', 'g')
+    plot(traces(resultStruct.artifactIDs, :)', 'color', 'r')
+    plot(traces(resultStruct.excluded, :)', 'color', 'k', 'linewidth', 2)
+
 end
