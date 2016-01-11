@@ -1,7 +1,7 @@
-function [ normDotMatrix, rawDotMatrix ] = cmpDotForNeuronStruct(neuronID, algoHandle, movie, thresholds, samplesLim)
+function [ normDotMatrix, rawDotMatrix ] = cmpDotForNeuronMovieStruct(neuronID, algoHandle, movie, thresholds, samplesLim)
     %algoHandle algo(traces, threshold)
-    global DATA_PATH TRACES_NUMBER_LIMIT EVENT_NUMBER;
-    global NEURON_REC_ELE_MAP NEURON_ELE_MAP NEURON_CLUST_FILE_MAP 
+    global DATA_PATH TRACES_NUMBER_LIMIT EVENT_NUMBER 
+    global NEURON_REC_ELE_MAP NEURON_ELE_MAP NEURON_CLUST_FILE_MAP
     recEle = NEURON_REC_ELE_MAP(neuronID);
     patternNumber = NEURON_ELE_MAP(neuronID);
     clusterFileName = NEURON_CLUST_FILE_MAP(neuronID);

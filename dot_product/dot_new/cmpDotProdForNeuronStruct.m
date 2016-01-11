@@ -1,4 +1,4 @@
-function [ fullNormDotMatrix, fullRawDotMatrix] = cmpDotProdForNeuronsStruct(neuronID, movies, algoHandle, thresholds, samplesLim)
+function [ fullNormDotMatrix, fullRawDotMatrix] = cmpDotProdForNeuronStruct(neuronID, movies, algoHandle, thresholds, samplesLim)
     fullNormDotMatrix = zeros(length(movies), length(thresholds), length(thresholds));
     fullRawDotMatrix = fullNormDotMatrix;
     
