@@ -1,9 +1,8 @@
-function [ resultStruct] = nDRWplusPruning(Waveforms, QuantTh, nDRW, samplesLim)
+function [ resultStruct] = nDRWplusPruning(Waveforms, QuantTh, nDRW, artToPrune, samplesLim)
     %resultStruct fields: artifactIDs, excluded, spikes
     %samplesLim - format [min max] first and last sample taken under
-    %cosideration, the samples outsideboundaries are ignored
+    %   cosideration, the samples outside boundaries are ignored
     
-    %samplesLim = [11 40]; %!!!!!!!!!!!!!!!!!
     resultStruct = struct();
     nWaveforms = size(Waveforms,1);
     numberOfDRW = ones(nWaveforms,1);
@@ -12,10 +11,9 @@ function [ resultStruct] = nDRWplusPruning(Waveforms, QuantTh, nDRW, samplesLim)
         tmpArtifact = Waveforms(iWave,:);
         numberOfDRW(iWave) = nDRWFunction(Waveforms, tmpArtifact, QuantTh, samplesLim);
     end
-    
-    artifacts = tracesIDs(numberOfDRW < nDRW);
+        artifacts = tracesIDs(numberOfDRW < nDRW);
     spikes = setdiff(1:nWaveforms, artifacts);
-    excluded = pruneExtremeArtifacts(Waveforms, artifacts, 2, samplesLim);
+    excluded = pruneExtremeArtifacts(Waveforms, artifacts, artToPrune, samplesLim);
     artifacts = setdiff(artifacts, excluded);
     resultStruct.artifactIDs = artifacts;
     resultStruct.excluded = excluded;

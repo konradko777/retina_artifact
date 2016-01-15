@@ -1,6 +1,6 @@
 function [ tracesDictionary ] = createTestTracesMovieEleDict
-    labels = {'typical', '1outlier', '2outliers', '3clusters'};
-    movieElectrode = {[7 1] [13 16] [10 16] [9 1]};
+    labels = {'typical', '1outlier', '2outliers', '3clusters', '10perc', '90perc'};
+    movieElectrode = {[7 1] [13 16] [10 16] [9 1] [8 37] [4 54]};
     tracesDictionary = containers.Map(labels, movieElectrode);
 
 

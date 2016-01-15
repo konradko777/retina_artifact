@@ -1,7 +1,6 @@
-function [ normDotMatrix, rawDotMatrix, artifactIDsMatrix ] = cmpDotForNeuronMovieStruct(neuronID, algoHandle, movie, thresholds, samplesLim)
-
-%[mergedMeasureMatrix, meanArtifacts, artifactIDs] = computeDotProductMeasure(electrodeNumber, patternNumber, movieNumber, thresholds)
+function [measureMatrix, artifactIDsMatrix] = cmpMeasureForNeuronMovie(neuronID, movie, thresholds, samplesLim, algoHandle, measureHandle)
     %algoHandle algo(traces, threshold)
+    %measureHandle measure(avgArtifactsMatrix)
     global DATA_PATH TRACES_NUMBER_LIMIT EVENT_NUMBER 
     global NEURON_REC_ELE_MAP NEURON_ELE_MAP NEURON_CLUST_FILE_MAP
     recEle = NEURON_REC_ELE_MAP(neuronID);
@@ -18,7 +17,7 @@ function [ normDotMatrix, rawDotMatrix, artifactIDsMatrix ] = cmpDotForNeuronMov
     meanArtifacts = computeMeanArtifacts(traces, artifactIDsMatrix);
     meanArtifacts = meanArtifacts - repmat(nanmean(meanArtifacts),size(meanArtifacts, 1), 1); %odejmowanie usrednionego artefaktu
     meanArtifacts = meanArtifacts(:, samplesLim(1):samplesLim(2));
-    [normDotMatrix, rawDotMatrix] = computeDotMeasure(meanArtifacts);
+    measureMatrix = computeMeasureMat(meanArtifacts, measureHandle);
     
 end
 
@@ -39,18 +38,5 @@ function meanArtifacts = computeMeanArtifacts(oneChannelTraces, artifactIDsMatri
     for  i = 1:length(artifactIDsMatrix)
         artifacts = artifactIDsMatrix{i};
         meanArtifacts(i, :) = mean(oneChannelTraces(artifacts, :));
-    end
-end
-
-
-function [normed, raw] = computeDotMeasure(meanArtifacts)
-    N = size(meanArtifacts, 1);
-    normed = zeros(N);
-    raw = zeros(N);
-    for i = 1:N
-        for j = 1:N
-            normed(i, j) = normalizedDotMeasure(meanArtifacts(i, :), meanArtifacts(j, :));
-            raw(i,j) = dot(meanArtifacts(i, :), meanArtifacts(j, :));
-        end
     end
 end

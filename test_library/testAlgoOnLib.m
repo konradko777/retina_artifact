@@ -1,9 +1,9 @@
 function resultStruct = testAlgoOnLib( algoHandle, testLibDict)
     for labelCell = keys(testLibDict)
         label = labelCell{1};
-        if ~strcmp(label, '2outliers')
-            continue
-        end
+%         if ~strcmp(label, '2outliers')
+%             continue
+%         end
         traces = testLibDict(label);
         resultStruct = algoHandle(traces);
         figure
