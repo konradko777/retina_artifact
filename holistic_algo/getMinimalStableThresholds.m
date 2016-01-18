@@ -1,4 +1,4 @@
-function stableThreshold = getMinimalStableThresholds(measureMatrix, thresholds, similaritydBreachFunc, minimalCluster) %, maxNeighbourDiff, nToFormCluster)
+function stableThresholds = getMinimalStableThresholds(measureMatrix, thresholds, similaritydBreachFunc, minimalCluster) %, maxNeighbourDiff, nToFormCluster)
 %measureMatrix(array<float>) - square matrix of difference measure between avgArtifacts
 %thresholds(vector<float>) - quantization thresholds used when computing avgArtifacts
 %maxNeighbourDiff(float) - maximum difference between neighbouring fields
@@ -20,11 +20,11 @@ function stableThreshold = getMinimalStableThresholds(measureMatrix, thresholds,
         end
         [bestThresIdx, bestThres] = findBestThreshold(measureValForThres, thresholds, i, similaritydBreachFunc);
         if length(bestThresIdx) >= minimalCluster
-            stableThreshold = bestThresIdx;
+            stableThresholds = bestThresIdx;
             return
         end
     end
-    stableThreshold = [];
+    stableThresholds = [];
 end
     
 

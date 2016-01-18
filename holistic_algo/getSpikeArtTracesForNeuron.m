@@ -8,7 +8,7 @@ function [spikeTraces, artifactTraces] = getSpikeArtTracesForNeuron(neuronID)
     clusterFileName = NEURON_CLUST_FILE_MAP(neuronID);
     recordingEle = NEURON_REC_ELE_MAP(neuronID);
     [spikeIDs, artifactIDs] = getSpikeArtIDs(clusterFileName,movieNumber,patternNumber);
-    eleTraces = getMovieEleTraces(movieNumber, patternNumber);
+    eleTraces = getMovieEleTraces(movieNumber, recordingEle);
     spikeTraces = eleTraces(spikeIDs, :);
     artifactTraces = eleTraces(artifactIDs, :);
 end
