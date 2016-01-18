@@ -14,10 +14,10 @@ function plotMeasureForNeuronChoice(neuronID, movies, thresholds, ...
         subplot(4,6,i)
         if chosenMovie == i
             plotMeasureForNeuronMovieThresChoice(squeeze(fullmeasureMat(i, :, :)), thresholds, fullArtifactIDsMatrix{i}, fullClustArtNumVec(i),...
-                colorAxisLim, true, fullStableThresholds{i}, 1)
+                colorAxisLim, true, fullStableThresholds(i), 1)
         else
             plotMeasureForNeuronMovieThresChoice(squeeze(fullmeasureMat(i, :, :)), thresholds, fullArtifactIDsMatrix{i}, fullClustArtNumVec(i),...
-                colorAxisLim, false, fullStableThresholds{i}, 1)
+                colorAxisLim, false, fullStableThresholds(i), 1)
         end
 %         title(movieNumber); %dodac odczyt amplitud
     end

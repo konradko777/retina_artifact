@@ -15,7 +15,7 @@ function plotMeasureForNeuronMovieThresChoice(measureMatrix, thresholdValues, ..
     setTickLabels(thresholdValues);
     setNumberOfArtifacts(nOfArtsPerThres);
     setNumberOfClustArt(thresholdValues, clusterArtifactNo);
-    if markSelectedThresholds
+    if markSelectedThresholds && selectedThresholds
         markThresholds(selectedThresholds);
     end
     if markSelectedMovie

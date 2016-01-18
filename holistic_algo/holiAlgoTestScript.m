@@ -3,7 +3,7 @@ MOVIES = 1:24;
 THRESHOLDS = 5:5:45;
 ART_TO_PRUNE = 2;
 MINIMAL_CLUSTER = 3;
-NEURON_ID = 227;
+NEURON_ID = 256;
 addJava
 setGlobals
 % global NEURON_IDS
@@ -21,12 +21,19 @@ thresBreach20 = @(simValuesVec) thresholdBreachFunc(simValuesVec, 10);
 %         artifactIDsMatrix, 99999, [0 10], true, stableThres, true)
 % plotMeasureForNeuron(76, MOVIES, THRESHOLDS, fullMat, fullArtIDsMat, fullClustArtNumVec)
 
-% % getMinimalStableThreshold(squeeze(fullMat(1, :, :)), THRESHOLDS, thresBreach20, 3)
-stableThresholdsMat = getMinStableThresForMovies(fullMat, MOVIES, THRESHOLDS, thresBreach20, MINIMAL_CLUSTER);
+% getMinimalStableThreshold(squeeze(fullMat(1, :, :)), THRESHOLDS, thresBreach20, 3)
+% stableThresholdsMat = getMinStableThresForMovies(fullMat, MOVIES, THRESHOLDS, thresBreach20, MINIMAL_CLUSTER);
+% stableThresVec = chooseStableThresIdx(stableThresholdsMat);
+% spikesDetected = detectSpikesForNeuron(NEURON_ID, MOVIES, fullArtIDsMat, stableThresVec, 10, SAMPLES_LIM);
+
+[ fullMeasureMatrix, fullArtifactIDsMatrix, fullClustArtNumVec, stableThresVec, spikesDetected, movieIdx] = ...
+    holisticAlgo1(NEURON_ID, MOVIES, THRESHOLDS, SAMPLES_LIM, algoHandle, measureHandle, thresBreach20, 3, 10, 25);
 
 plotMeasureForNeuronChoice(NEURON_ID, MOVIES, THRESHOLDS, ...
-        fullMat, fullArtIDsMat, fullClustArtNumVec, ...
-        stableThresholdsMat, 5)
+        fullMeasureMatrix, fullArtifactIDsMatrix, fullClustArtNumVec, ...
+        stableThresVec, movieIdx)
+
+
 
 % NEURON_IDS=256;
 % for neuronID = NEURON_IDS
