@@ -1,8 +1,8 @@
-function spikesDetected = detectSpikesForNeuron(neuronID, movies, fullAlgoArtIDs, stableThresForMovie, spikeDetMarigin, sampleLim)
+function spikesDetectedVec = detectSpikesForNeuron(neuronID, movies, fullAlgoArtIDs, stableThresForMovie, spikeDetMarigin, sampleLim)
 %spikeDetMArigin - by how much resulting waveform's minimum can differ from
 %   neuron amplitude to be still classified as TODO watch out for '-' sign
 %   complications, mayby percentwise solution is Better?
-    spikesDetected = zeros(size(movies));
+    spikesDetectedVec = zeros(size(movies));
     neuronSpikeAmpDict = createNeuronSpikeAmpDict();
     for i=1:length(movies)
         movie = movies(i);
@@ -15,7 +15,7 @@ function spikesDetected = detectSpikesForNeuron(neuronID, movies, fullAlgoArtIDs
         spikeAmplitude = neuronSpikeAmpDict(neuronID);
         traces = getTracesForNeuronMovie(neuronID, movie);
         avgArtifact = getAvgArtifactFromAlgo(traces, thresArtIDs);
-        spikesDetected(i) = detectSpikesForMovie(traces, avgArtifact, spikeAmplitude + spikeDetMarigin, sampleLim);
+        [spikesDetectedVec(i), ~] = detectSpikesForMovie(traces, avgArtifact, spikeAmplitude + spikeDetMarigin, sampleLim);
     end
 
 

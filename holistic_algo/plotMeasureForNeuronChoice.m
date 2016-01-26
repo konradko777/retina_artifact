@@ -1,6 +1,6 @@
 function plotMeasureForNeuronChoice(neuronID, movies, thresholds, ...
         fullmeasureMat, fullArtifactIDsMatrix, fullClustArtNumVec, ...
-        fullStableThresholds, chosenMovie)
+        stableThresholdsVec, detectedSpikesVec, chosenMovie)
     global NEURON_REC_ELE_MAP NEURON_ELE_MAP NEURON_CLUST_FILE_MAP
     colorAxisLim = [0 30];
     recEle = NEURON_REC_ELE_MAP(neuronID);
@@ -14,19 +14,19 @@ function plotMeasureForNeuronChoice(neuronID, movies, thresholds, ...
         subplot(4,6,i)
         if chosenMovie == i
             plotMeasureForNeuronMovieThresChoice(squeeze(fullmeasureMat(i, :, :)), thresholds, fullArtifactIDsMatrix{i}, fullClustArtNumVec(i),...
-                colorAxisLim, true, fullStableThresholds(i), 1)
+                colorAxisLim, true, stableThresholdsVec(i), 1, detectedSpikesVec(i))
         else
             plotMeasureForNeuronMovieThresChoice(squeeze(fullmeasureMat(i, :, :)), thresholds, fullArtifactIDsMatrix{i}, fullClustArtNumVec(i),...
-                colorAxisLim, false, fullStableThresholds(i), 1)
+                colorAxisLim, false, stableThresholdsVec(i), 1, detectedSpikesVec(i))
         end
 %         title(movieNumber); %dodac odczyt amplitud
     end
-%     filename = num2str(neuronID);
-%     path = 'C:\studia\dane_skrypty_wojtek\ks_functions\dot_product\';
-%     axes('position',[0,0,1,1],'visible','off');
-%     text(.5, 0.97, sprintf('Neuron: %d Recording ele: %d', neuronID, recEle), ...
-%         'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')
-%     print([path filename], '-dpng', '-r300');
-%     close(f)
+    filename = num2str(neuronID);
+    path = 'C:\studia\dane_skrypty_wojtek\ks_functions\holistic_algo\graph\';
+    axes('position',[0,0,1,1],'visible','off');
+    text(.5, 0.97, sprintf('Neuron: %d Recording ele: %d', neuronID, recEle), ...
+        'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')
+    print([path filename '_tuned'], '-dpng', '-r300');
+    close(f)
 end
 

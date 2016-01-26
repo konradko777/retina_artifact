@@ -2,7 +2,6 @@ function [ resultStruct] = nDRWplusPruning(Waveforms, QuantTh, nDRW, artToPrune,
     %resultStruct fields: artifactIDs, excluded, spikes
     %samplesLim - format [min max] first and last sample taken under
     %   cosideration, the samples outside boundaries are ignored
-    
     resultStruct = struct();
     nWaveforms = size(Waveforms,1);
     numberOfDRW = ones(nWaveforms,1);

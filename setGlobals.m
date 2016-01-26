@@ -11,7 +11,7 @@ function setGlobals()
     ELE_NEURON_MAP = containers.Map(StimEle, NEURON_IDS);
     halfEfficiencyMovie = [8 6 18 15 10 17 11 1 2 8 9 21];
     NEURON_HALF_EFF_MOVIE_MAP = containers.Map(NEURON_IDS, halfEfficiencyMovie);
-    recordingElectrode = [1 16 18 10 27 28 37 45 54 50 58 61]; %% neuron271 (4.) nietypowe zachowanie
+    recordingElectrode = [1 16 18 10 27 28 37 45 54 51 60 61]; %% neuron271 (4.) nietypowe zachowanie
     NEURON_REC_ELE_MAP = containers.Map(NEURON_IDS, recordingElectrode);
     NEURON_CLUST_FILE_MAP= createNeuronClustFileMap(NEURON_IDS);
 end

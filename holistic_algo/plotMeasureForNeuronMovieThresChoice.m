@@ -1,6 +1,6 @@
 function plotMeasureForNeuronMovieThresChoice(measureMatrix, thresholdValues, ...
         artifactIDsMatrix, clusterArtifactNo, caxisLim, markSelectedMovie, ...
-        selectedThresholds, markSelectedThresholds)
+        selectedThresholds, markSelectedThresholds, detectedSpikesNo)
     %artifactIDsMatrix - in each cell vector of artifact IDs for given
     %clusterArtifactNo(int) - number of artifact taken from cluster file
     %caxisLim([min(int) max(int)]) - min and max value used while color mapping
@@ -15,6 +15,7 @@ function plotMeasureForNeuronMovieThresChoice(measureMatrix, thresholdValues, ..
     setTickLabels(thresholdValues);
     setNumberOfArtifacts(nOfArtsPerThres);
     setNumberOfClustArt(thresholdValues, clusterArtifactNo);
+    setNumberOfDetectedSpikes(thresholdValues, detectedSpikesNo);
     if markSelectedThresholds && selectedThresholds
         markThresholds(selectedThresholds);
     end
@@ -37,7 +38,7 @@ function markMovie()
     offset = 1;
     rectangle('Position', [x_min - offset, y_min - offset, ...
         width + 2*offset height + 3*offset], ...
-        'clipping', 'off', 'edgecolor', 'b');
+        'clipping', 'off', 'edgecolor', 'b', 'linewidth', 2);
 
 end
     
@@ -48,10 +49,10 @@ function markThresholds(selectedThresholds)
     nThres = length(selectedThresholds);
     XOFFSET = .5;
     YPOS = -.3;
-    YDIM = .6;
+    YDIM = .7;
     FIRST = selectedThresholds(1);
     rectangle('Position', [(FIRST - XOFFSET) YPOS (nThres) YDIM], ...
-        'clipping', 'off', 'edgecolor', 'r');
+        'clipping', 'off', 'edgecolor', 'r', 'linewidth', 1.5);
 
 
 end
@@ -83,7 +84,14 @@ end
 function setNumberOfClustArt(thresholdValues, clusterArtifactNo)
     n = length(thresholdValues);
     axDist = n + 1.5;
-    text((n+1) / 2, axDist, sprintf('Cluster: %d', clusterArtifactNo), 'horizontalAlignment', 'center')
+    text((n+1) / 4, axDist, sprintf('Clust: %d', clusterArtifactNo), 'horizontalAlignment', 'center')
+
+end
+
+function setNumberOfDetectedSpikes(thresholdValues, detectedSpikesNo)
+    n = length(thresholdValues);
+    axDist = n + 1.5;
+    text(3 * (n+1) / 4, axDist, sprintf('Spikes: %d', detectedSpikesNo), 'horizontalAlignment', 'center')
 
 end
 function setNumberOfArtifacts(nOfArtsVector)
