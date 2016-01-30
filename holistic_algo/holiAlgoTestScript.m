@@ -34,13 +34,15 @@ for i = 1:length(NEURON_IDS);
     NEURON_ID = NEURON_IDS(i);
     [ fullMeasureMatrix, fullArtifactIDsMatrix, fullExcludedIDsMatrix, fullSpikesIDsMatrix, fullClustArtNumVec, stableThresVec, spikesDetected, movieIdx] = ...
         holisticAlgo1(NEURON_ID, MOVIES, THRESHOLDS, SAMPLES_LIM, algoHandle, measureHandle, thresBreach20, MINIMAL_CLUSTER, SPIKE_DET_MARG, HOW_MANY_SPIKES);
+    movieIdx = 1;
+    stableThresVec = ones(size(stableThresVec));
     movieThresArtIDs = fullArtifactIDsMatrix{movieIdx}{stableThresVec(movieIdx)};
     movieThresExclIDs = fullExcludedIDsMatrix{movieIdx}{stableThresVec(movieIdx)};
     movieThresSpikeIDs = fullSpikesIDsMatrix{movieIdx}{stableThresVec(movieIdx)};
 %     figure
-%     meanAlgoSpike1 = checkAlgorithmOutcome(NEURON_ID, movieIdx, movieThresArtIDs, movieThresExclIDs, movieThresSpikeIDs, -50, SAMPLES_LIM);
+    meanAlgoSpike1 = checkAlgorithmOutcome(NEURON_ID, movieIdx, movieThresArtIDs, movieThresExclIDs, movieThresSpikeIDs, -50, SAMPLES_LIM);
 %     subplot(3,4, i)
-    [meanClustSpike, meanAlgoSpike2, meanAlgoArt] = getMeanClustAndAlgoSpikeForNeuron(NEURON_ID, movieIdx, movieThresArtIDs, SAMPLES_LIM);
+%     [meanClustSpike, meanAlgoSpike2, meanAlgoArt] = getMeanClustAndAlgoSpikeForNeuron(NEURON_ID, movieIdx, movieThresArtIDs, SAMPLES_LIM);
 %     plotMeanClustAndAlgoSpikeForNeuron(meanClustSpike - meanAlgoArt, meanAlgoSpike2 - meanAlgoArt, NEURON_ID)
 %     plotMeasureForNeuronChoice(NEURON_ID, MOVIES, THRESHOLDS, ...
 %         fullMeasureMatrix, fullArtifactIDsMatrix, fullClustArtNumVec, ...

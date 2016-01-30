@@ -1,6 +1,6 @@
 function plotMeasureForNeuronChoice(neuronID, movies, thresholds, ...
         fullmeasureMat, fullArtifactIDsMatrix, fullClustArtNumVec, ...
-        stableThresholdsVec, detectedSpikesVec, chosenMovie)
+        stableThresholdsVec, detectedSpikesVec, chosenMovie, path)
     global NEURON_REC_ELE_MAP NEURON_ELE_MAP NEURON_CLUST_FILE_MAP
     colorAxisLim = [0 30];
     recEle = NEURON_REC_ELE_MAP(neuronID);
@@ -22,11 +22,10 @@ function plotMeasureForNeuronChoice(neuronID, movies, thresholds, ...
 %         title(movieNumber); %dodac odczyt amplitud
     end
     filename = num2str(neuronID);
-    path = 'C:\studia\dane_skrypty_wojtek\ks_functions\holistic_algo\graph\';
     axes('position',[0,0,1,1],'visible','off');
     text(.5, 0.97, sprintf('Neuron: %d Recording ele: %d', neuronID, recEle), ...
         'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')
-    print([path filename '_tuned'], '-dpng', '-r300');
+    print([path filename '_20'], '-dpng', '-r300');
     close(f)
 end
 

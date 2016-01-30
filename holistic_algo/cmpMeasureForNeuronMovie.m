@@ -16,7 +16,7 @@ function [measureMatrix, artifactIDsMatrix, excludedIDsMatrix, spikesIDsMatrix ]
     end
     [artifactIDsMatrix, excludedIDsMatrix, spikesIDsMatrix]  = computeIDsMatrices(traces, thresholdAlgoHandles);
     meanArtifacts = computeMeanArtifacts(traces, artifactIDsMatrix);
-    meanArtifacts = meanArtifacts - repmat(nanmean(meanArtifacts),size(meanArtifacts, 1), 1); %odejmowanie usrednionego artefaktu
+%     meanArtifacts = meanArtifacts - repmat(nanmean(meanArtifacts),size(meanArtifacts, 1), 1); %odejmowanie usrednionego artefaktu
     meanArtifacts = meanArtifacts(:, samplesLim(1):samplesLim(2));
     measureMatrix = computeMeasureMat(meanArtifacts, measureHandle);
     
