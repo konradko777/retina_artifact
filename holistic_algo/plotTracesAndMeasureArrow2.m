@@ -23,7 +23,9 @@ function meanAlgoSpike = plotTracesAndMeasureArrow(neuronID, movie, thresholdArr
     detectedSpikesIdx = find(detectedSpikesVec);
     bothSpikes = intersect(detectedSpikesIdx, clustSpikeIDs);
     bothArtifacts = intersect(algoMovieThresArtIDs, clustArtifactIDs);
-    others = setdiff(1:nTraces, union(bothSpikes, bothArtifacts));
+    algoSpikesNotClust = reshape(setdiff(detectedSpikesIdx, clustSpikeIDs), [], 1);
+    algoArtifactsNotClust = reshape(setdiff(algoMovieThresArtIDs, clustArtifactIDs), [], 1);
+    others = setdiff(1:nTraces, [bothSpikes; bothArtifacts; algoSpikesNotClust; algoArtifactsNotClust;]);
     meanAlgoSpike = mean(traces(detectedSpikesVec, :));
     
     
@@ -40,22 +42,26 @@ function meanAlgoSpike = plotTracesAndMeasureArrow(neuronID, movie, thresholdArr
     set(gca, 'GridLineStyle', '-');
     title('Raw Signal', 'fontsize', 13)
     plotSelectedTraces(traces, bothSpikes,'g')
+    plotSelectedTraces(traces, algoSpikesNotClust,'c')
     plotSelectedTraces(traces, bothArtifacts,'r')
+    plotSelectedTraces(traces, algoArtifactsNotClust,'m')
     plotSelectedTraces(traces, others,'k')
-    legendHandle = legend('Both Spikes', 'Both Artifact', 'Ambiguous', ...
+    legendHandle = legend('Both Spikes', 'onlyAlgoSpikes', 'Both Artifact', 'onlyAlgoArtifacts', 'Others', ...
         'location', 'southeast');
-    correctLegend(legendHandle, {'g', 'r', 'k'});
+    correctLegend(legendHandle, {'g','c', 'r', 'm' 'k'});
     subplot(2,3,4)
     hold on
     grid on
     set(gca, 'GridLineStyle', '-');
     title('Raw Signal - mean artifact', 'fontsize', 13)
     plotSelectedTraces(tracesMinusMeanArt, bothSpikes,'g')
+    plotSelectedTraces(tracesMinusMeanArt, algoSpikesNotClust,'c')
     plotSelectedTraces(tracesMinusMeanArt, bothArtifacts,'r')
+    plotSelectedTraces(tracesMinusMeanArt, algoArtifactsNotClust,'m')
     plotSelectedTraces(tracesMinusMeanArt, others,'k')
-    legendHandle = legend('Both Spikes', 'Both Artifact', 'Ambiguous',...
+    legendHandle = legend('Both Spikes', 'onlyAlgoSpikes', 'Both Artifact', 'onlyAlgoArtifacts', 'Others', ...
         'location', 'southeast');
-    correctLegend(legendHandle, {'g', 'r', 'k'});
+    correctLegend(legendHandle, {'g','c', 'r', 'm' 'k'});
     subplot(2, 3, [2, 3, 5, 6])
     if movie == chosenMovie
         plotMeasureForNeuronMovieArrow(movieMeasureMat, thresholdValues, ...

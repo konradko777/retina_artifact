@@ -1,3 +1,6 @@
+subplot(2,3, 1)
 plot(1:10)
-% annotation('arrow',[.1 .1],[0 .1], 'color', 'r')
-text(1,.8,'\uparrow','fontsize',15)
+subplot(2,3, 4)
+plot(1:10)
+subplot(2,3, [2 3 5 6])
+plot(1:10)

@@ -1,8 +1,7 @@
 function plotMeasureForNeuronChoice(neuronID, movies, thresholds, ...
         fullmeasureMat, fullArtifactIDsMatrix, fullClustArtNumVec, ...
-        stableThresholdsVec, detectedSpikesVec, chosenMovie, path)
+        stableThresholdsVec, detectedSpikesVec, chosenMovie, path, colorAxisLim)
     global NEURON_REC_ELE_MAP NEURON_ELE_MAP NEURON_CLUST_FILE_MAP
-    colorAxisLim = [0 30];
     recEle = NEURON_REC_ELE_MAP(neuronID);
     patternNumber = NEURON_ELE_MAP(neuronID);
     clusterFileName = NEURON_CLUST_FILE_MAP(neuronID);

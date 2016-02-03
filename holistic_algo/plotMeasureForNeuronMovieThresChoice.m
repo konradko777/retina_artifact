@@ -10,10 +10,11 @@ function plotMeasureForNeuronMovieThresChoice(measureMatrix, thresholdValues, ..
     %selectedThresholds(array<ints> - indices of selected thresholds
     %markselectedThresholds - whether to mark selected thersholds
     %movie
+    FONTSIZE = 3;
     nOfArtsPerThres = getNumberOfArtifacts(artifactIDsMatrix);
     imagesc2(measureMatrix, caxisLim, selectedThresholds);
-    setTickLabels(thresholdValues);
-    setNumberOfArtifacts(nOfArtsPerThres);
+    setTickLabels(thresholdValues, FONTSIZE);
+    setNumberOfArtifacts(nOfArtsPerThres, FONTSIZE);
     setNumberOfClustArt(thresholdValues, clusterArtifactNo);
     setNumberOfDetectedSpikes(thresholdValues, detectedSpikesNo);
     if markSelectedThresholds && selectedThresholds
@@ -35,7 +36,7 @@ function markMovie()
     y_max = ylims(2);
     width = x_max - x_min;
     height = y_max - y_min;
-    offset = 1;
+    offset = 3;
     rectangle('Position', [x_min - offset, y_min - offset, ...
         width + 2*offset height + 3*offset], ...
         'clipping', 'off', 'edgecolor', 'b', 'linewidth', 2);
@@ -83,33 +84,33 @@ end
 
 function setNumberOfClustArt(thresholdValues, clusterArtifactNo)
     n = length(thresholdValues);
-    axDist = n + 1.5;
+    axDist = n + 3;
     text((n+1) / 4, axDist, sprintf('Clust: %d', clusterArtifactNo), 'horizontalAlignment', 'center')
 
 end
 
 function setNumberOfDetectedSpikes(thresholdValues, detectedSpikesNo)
     n = length(thresholdValues);
-    axDist = n + 1.5;
+    axDist = n + 3;
     text(3 * (n+1) / 4, axDist, sprintf('Spikes: %d', detectedSpikesNo), 'horizontalAlignment', 'center')
 
 end
-function setNumberOfArtifacts(nOfArtsVector)
+function setNumberOfArtifacts(nOfArtsVector, fontsize)
     labels = cellstr(num2str(nOfArtsVector'));
     n = length(nOfArtsVector);
     axDist = n + 0.8;
     for i = 1:n
-        text(i, axDist,  labels{i},'horizontalAlignment', 'center');
+        text(i, axDist,  labels{i},'horizontalAlignment', 'center', 'fontsize', fontsize);
     end
 
 end
-function setTickLabels(values)
+function setTickLabels(values, fontsize)
     labels = cellstr(num2str(values'));
     n = length(values);
     underAxDist = - 0.001;
     for i = 1:n
-        text(-.02, i, labels{i},'horizontalAlignment', 'center');
-        text(i,underAxDist,  labels{i},'horizontalAlignment', 'center');
+        text(-.02, i, labels{i},'horizontalAlignment', 'center', 'fontsize', fontsize);
+        text(i,underAxDist,  labels{i},'horizontalAlignment', 'center', 'fontsize', fontsize);
     end
 end
 
