@@ -1,5 +1,5 @@
 function spikeAmpDict = createNeuronSpikeAmpDict()
-    spikeAmpDict = createAmpDictByHand2();
+    spikeAmpDict = createAmpDictByHand();
 end
 
 
@@ -15,7 +15,7 @@ end
 function dict_ = createAmpDictByHand()
 %% change asap! automate it!
     NEURON_IDS=[76 227 256 271 391 406 541 616 691 736 856 901];
-    spikeHandAmps = [-20 -80 -20 -110 -50 -40 -50 -70 -40 -100 -30 -50];
+    spikeHandAmps = [-20 -80 -20 -50 -50 -40 -50 -70 -40 -100 -30 -50];
     dict_ = containers.Map(NEURON_IDS, spikeHandAmps);
 
 end

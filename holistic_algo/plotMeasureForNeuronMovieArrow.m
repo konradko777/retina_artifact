@@ -53,13 +53,19 @@ function markThresholds(selectedThresholds)
     if isempty(selectedThresholds);
         return
     end
-    nThres = length(selectedThresholds);
-    XOFFSET = .5;
-    YPOS = -.3;
-    YDIM = .7;
-    FIRST = selectedThresholds(1);
-    rectangle('Position', [(FIRST - XOFFSET) YPOS (nThres) YDIM], ...
-        'clipping', 'off', 'edgecolor', 'r', 'linewidth', 1.5);
+    if length(selectedThresholds) ~= 1
+        error('This version of marking selected thresholds supports only scalar argument')
+    end
+    y = -1;
+    text(selectedThresholds, y,'\uparrow','fontsize',15, 'color' , 'g',...
+        'horizontalAlignment', 'center', 'fontweight', 'bold')
+%     nThres = length(selectedThresholds);
+%     XOFFSET = .5;
+%     YPOS = -.3;
+%     YDIM = .7;
+%     FIRST = selectedThresholds(1);
+%     rectangle('Position', [(FIRST - XOFFSET) YPOS (nThres) YDIM], ...
+%         'clipping', 'off', 'edgecolor', 'r', 'linewidth', 1.5);
 
 
 end
@@ -116,7 +122,8 @@ function setTickLabels(values)
     underAxDist = - 0.001;
     for i = 1:n
         text(-.02, i, labels{i},'horizontalAlignment', 'center');
-        text(i,underAxDist,  labels{i},'horizontalAlignment', 'center');
+        text(i,underAxDist,  labels{i},'horizontalAlignment', 'center',...
+            'rotation', 90);
     end
 end
 
