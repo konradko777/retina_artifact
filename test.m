@@ -1,18 +1,21 @@
-HORIZONTAL_OFFSET = .02;
-VERTICAL_OFFSET = .075;
-SMALL_WIDTH = .25;
-SMALL_HEIGHT = .4;
-BIG_WIDTH = .4;
-BIG_HEIGHT = 2*SMALL_HEIGHT + VERTICAL_OFFSET;
-subplot('Position', [HORIZONTAL_OFFSET, 2*VERTICAL_OFFSET + SMALL_HEIGHT, SMALL_WIDTH, SMALL_HEIGHT])
+function test
+    subplot(2,1,1)
+    plot(1:10)
+    markMovie()
+end
 
-subplot('Position', [2*HORIZONTAL_OFFSET + SMALL_WIDTH, 2*VERTICAL_OFFSET + SMALL_HEIGHT, SMALL_WIDTH, SMALL_HEIGHT])
-
-subplot('Position', [HORIZONTAL_OFFSET, VERTICAL_OFFSET, SMALL_WIDTH, SMALL_HEIGHT])
-
-subplot('Position', [2*HORIZONTAL_OFFSET + SMALL_WIDTH, VERTICAL_OFFSET, SMALL_WIDTH, SMALL_HEIGHT])
-
-subplot('Position', [3*HORIZONTAL_OFFSET + 2*SMALL_WIDTH, VERTICAL_OFFSET, BIG_WIDTH, BIG_HEIGHT])
-
-
-
+function markMovie()
+    xlims = xlim;
+    ylims = ylim;
+    x_min = xlims(1);
+    x_max = xlims(2);
+    y_min = ylims(1);
+    y_max = ylims(2);
+    width = x_max - x_min;
+    height = y_max - y_min;
+    offset = 0;
+    rectangle('Position', [x_min - offset, y_min - offset, ...
+        width + 2*offset height + 3*offset], 'clipping', 'off', 'edgecolor', 'b', 'linewidth', 2);
+    ylim(ylims);
+    xlim(xlims);
+end
