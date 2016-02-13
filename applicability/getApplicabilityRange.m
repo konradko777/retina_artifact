@@ -1,6 +1,6 @@
 function [firstEligibleMovie, minimumIdx] = getApplicabilityRange(artifactsFoundPerMovie)
     minArts = 20;
-    maxArts = 40;
+    maxArts = 30;
     tolerance = 0;
     [~, locs] = findpeaks(-artifactsFoundPerMovie, 'MINPEAKHEIGHT', -minArts - tolerance );
     minimumIdx = locs(1);

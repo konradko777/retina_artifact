@@ -1,11 +1,11 @@
-function positions = test()
+function positions = generatePositionDict()
     %create POSITION dict
     ROWS = 4;
     COLUMNS = 6;
     positions = cell(ROWS * COLUMNS, 1);
     LEFT_MARIGIN = .02;
     BOTTOM_MARIGIN = .03;
-    HEIGHT = .21;
+    HEIGHT = .22;
     WIDTH = .15;
     SEPARATION = .015;
     i=1;

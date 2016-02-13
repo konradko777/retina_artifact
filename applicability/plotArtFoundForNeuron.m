@@ -6,6 +6,7 @@ function plotArtFoundForNeuron(artFoundVec, movie, neuron, minMovie, maxMovie)
     line([minMovie minMovie], ylim, 'color', 'g')
     line([maxMovie maxMovie], ylim, 'color', 'g')
     title(neuron)
+    
 %     ylabel('Artifacts found', 'fontsize', 14)
 %     xlabel('Movie No.', 'fontsize', 14)
 end

@@ -6,7 +6,7 @@ function stableThresholds = chooseStableThresIdx(stableClustersForMovies)
         if isempty(cluster)
             continue
         end
-        stableThresholds(i) = cluster(end);
+        stableThresholds(i) = cluster(1);%%%%% 1 lub end lub inne
     end
     
 
