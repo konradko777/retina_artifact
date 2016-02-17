@@ -1,4 +1,19 @@
-setGlobalsForApp
+SAMPLES_LIM = [11 40];
+MOVIES = [1, 3, 5, 7];%1:24;
+THRESHOLDS = 10:5:100;
+ART_TO_PRUNE = 2;
+MINIMAL_CLUSTER = 3;
+SPIKE_DET_MARG = 30;
+HOW_MANY_SPIKES = 25;
+PATH_ROOT = 'C:\studia\dane_skrypty_wojtek\ks_functions\512\';
+addJava
+setGlobals512
+algoHandle = @(traces, threshold) nDRWplusPruning(traces, threshold, 5, ART_TO_PRUNE, SAMPLES_LIM);
+measureHandle = @cmpDiffMeasureVec;
+thresBreach20 = @(simValuesVec) thresholdBreachFunc(simValuesVec, 30);
+global NEURON_SPIKE_AMP_MAP
+AMP_DICT = NEURON_SPIKE_AMP_MAP;
+COLOR_AXIS_LIM = [0 300];
 global NEURON_IDS
 fullArtIdxMatrices = cell(size(NEURON_IDS));
 fullSpikeIdxMatrices = cell(size(NEURON_IDS));
@@ -6,7 +21,7 @@ fullExcludedIdxMatrices = cell(size(NEURON_IDS));
 fullDetectedSpikesIdxMatrices = cell(size(NEURON_IDS));
 stableThresVectors = cell(size(NEURON_IDS));
 chosenMovies = zeros(size(NEURON_IDS));
-for i = 1:length(NEURON_IDS);
+for i = 1%:length(NEURON_IDS);
     NEURON_ID = NEURON_IDS(i);
     [ fullMeasureMatrix, fullArtifactIDsMatrix, fullExcludedIDsMatrix, fullSpikesIDsMatrix, ...
         fullClustArtNumVec, stableThresVec, spikesDetectedVec, fullSpikesDetectedIdxMat, movieIdx] = ...
@@ -15,7 +30,7 @@ for i = 1:length(NEURON_IDS);
     fullSpikeIdxMatrices{i} = fullSpikesIDsMatrix;
     fullExcludedIdxMatrices{i} = fullExcludedIDsMatrix;
     fullDetectedSpikesIdxMatrices{i} = fullSpikesDetectedIdxMat;
-    chosenMovies(i) = movieIdx;
+    chosenMovies(i) = 0;%movieIdx;
     stableThresVectors{i} = stableThresVec;
 %     plotMeasureForNeuronChoice(NEURON_ID, MOVIES, THRESHOLDS, ...
 %         fullMeasureMatrix, fullArtifactIDsMatrix, fullClustArtNumVec, ...
@@ -28,22 +43,15 @@ excludedDict = containers.Map(NEURON_IDS, fullExcludedIdxMatrices);
 detectedSpikesDict = containers.Map(NEURON_IDS, fullDetectedSpikesIdxMatrices);
 thresDict = containers.Map(NEURON_IDS, stableThresVectors);
 movieDict = containers.Map(NEURON_IDS, chosenMovies);
-% 
-% traces = getTracesForNeuronMovie(76, 7);
-% hold on
-% plot(traces')
-% [spikesDetectedVec, spikesDetectedIdxMat] = detectSpikesForNeuron(76, 7, artDict(76), thresDict(76), 0, SAMPLES_LIM);
-% plotSelectedTraces(traces, spikesDetectedIdxMat{1}, 'g')
-% % traces = spi
 
-
-
-path = 'C:\studia\dane_skrypty_wojtek\ks_functions\applicability\graph\';
-for NEURON_ID = NEURON_IDS
+path = 'C:\studia\dane_skrypty_wojtek\ks_functions\512\graph\';
+for NEURON_ID = 3245%NEURON_IDS
     allTraces = getTracesForNeuron(NEURON_ID, MOVIES);
     allTracesSubtracted = subtractMeanArtFromMovies(allTraces, artDict(NEURON_ID), thresDict(NEURON_ID), MOVIES);
     nOfSpikesVec = getNOfSpikesForMovies(MOVIES, detectedSpikesDict(NEURON_ID));
-    [minMovie, maxMovie] = getApplicabilityRangeSpikes(nOfSpikesVec);
+%     [minMovie, maxMovie] = getApplicabilityRangeSpikes(nOfSpikesVec);
+    minMovie = 1;
+    maxMovie = 4;
     f = figure();
     set(gcf, 'InvertHardCopy', 'off');
     set(gcf,'PaperUnits','inches','PaperPosition',[0 0 17.0667  9.6000])
@@ -56,17 +64,3 @@ for NEURON_ID = NEURON_IDS
     print([path neuronStr '_range'], '-dpng', '-r150');
     close(f)
 end
-
-
-i = 1;
-for NEURON_ID = NEURON_IDS
-    nOfSpikeVec = getNOfSpikesForMovies(MOVIES, detectedSpikesDict(NEURON_ID));
-    subplot(3,4,i)
-    plotArtFoundForNeuron(nOfSpikeVec, movieDict(NEURON_ID), NEURON_ID, 0, 0)
-    [minMovie, maxMovie] = getApplicabilityRangeSpikes(nOfSpikeVec);
-    plotArtFoundForNeuron(nOfSpikeVec, movieDict(NEURON_ID), NEURON_ID, minMovie, maxMovie)
-    i = i + 1;
-end
-% axes('position',[0,0,1,1],'visible','off');
-% text(.5, 0.99, sprintf('Applicability range for neurons. Spike detection.'), ...
-%     'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')

@@ -4,7 +4,8 @@ function [spikesDetectedVec, spikesDetectedIdxVec] = detectSpikesForNeuron(neuro
 %   complications, mayby percentwise solution is Better?
     spikesDetectedVec = zeros(size(movies));
     spikesDetectedIdxVec = cell(size(movies));
-    neuronSpikeAmpDict = createNeuronSpikeAmpDict();
+    global NEURON_SPIKE_AMP_MAP
+    neuronSpikeAmpDict = NEURON_SPIKE_AMP_MAP; %createNeuronSpikeAmpDict(); %%pami?ta? o wersjach
     for i=1:length(movies)
         movie = movies(i);
         movieArtIDs = fullAlgoArtIDs{i};

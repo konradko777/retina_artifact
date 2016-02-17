@@ -5,7 +5,7 @@ function [ fullMeasureMatrix, fullArtifactIDsMatrix, fullExcludedIDsMatrix, full
     fullArtifactIDsMatrix = cell(length(movies), 1); 
     fullExcludedIDsMatrix = cell(length(movies), 1); 
     fullSpikeIDsMatrix = cell(length(movies), 1); 
-    fullClustArtNumVec = getClusterArtNum(neuronID, movies);
+    fullClustArtNumVec = zeros(length(movies)); %getClusterArtNum(neuronID, movies);
     for i = 1:length(movies)
         movie = movies(i);
         [measureMatrix, artifactIDsMatrix, excludedIDsMatrix, spikesIDsMatrix] = cmpMeasureForNeuronMovie(neuronID, movie, thresholds, samplesLim, algoHandle, measureHandle); %%added 
