@@ -1,11 +1,10 @@
-function plotAppTracesForNeuronSpike(neuronID, moviesSpikesIDsMatrix, fullArtIdxMat, fullSpikeIdxMat, stableThresholdsVec,allTraces, movies, ...
+function plotAppTracesForNeuronSpike512(neuronID, moviesSpikesIDsMatrix, fullArtIdxMat, fullSpikeIdxMat, stableThresholdsVec,allTraces, movies, ...
     firstMovie, lastMovie, chosenMovie, thresholds)
-    size(allTraces)
     i = 1;
     OFFSET = 30;
     N_OF_TRACES = 50;
     X_LIM = [0 50];
-    POSITIONS = generatePositionDict();
+    POSITIONS = generatePositionDict2(4, 8);
     min_y = min(allTraces(:)) - OFFSET;
     max_y = max(allTraces(:)) + OFFSET;
     allTracesIdx = 1:N_OF_TRACES;
@@ -28,31 +27,30 @@ function plotAppTracesForNeuronSpike(neuronID, moviesSpikesIDsMatrix, fullArtIdx
         bothArts = intersect(movieNotSpikes, step1Arts);
         onlyStep2Arts = setdiff(movieNotSpikes,step1Arts);
         onlyStep2Spikes = setdiff(movieSpikes, step1Spikes);
-        if i ~= 19
+        if i ~= 25
             set(ms, 'xticklabel', '')
             set(ms, 'yticklabel', '')
         end
-            
+        plotSelectedTraces(traces, bothSpikes, 'g')
+        plotSelectedTraces(traces, onlyStep2Arts, 'm')
+        plotSelectedTraces(traces, bothArts, 'r')
+        plotSelectedTraces(traces, onlyStep2Spikes, 'c')
+        
         if i <= lastMovie && i >= firstMovie
-            
-            plotSelectedTraces(traces, bothSpikes, 'g')
-            plotSelectedTraces(traces, onlyStep2Arts, 'm')
-            plotSelectedTraces(traces, bothArts, 'r')
-            plotSelectedTraces(traces, onlyStep2Spikes, 'c')
-
-            
-            if i == chosenMovie
+            plotCircle(10, max_y - OFFSET, 'g')
+        end
+        if i == chosenMovie
                 markMovie(min_y, max_y, ms);
-            end
-            
-        else
-            plotSelectedTraces(traces, allTracesIdx, 'k')
         end
         plotSpikeNumber(nOfSpikes, 35, max_y - OFFSET);
         threshold = thresholds(stableThresIdx);
 %         plotThreshold(threshold, 35, max_y - 2*OFFSET);
         i = i + 1;
     end
+end
+
+function plotCircle(x, y, color)
+    plot(x, y, '.', 'color', color, 'MarkerSize', 40);
 end
 
 function plotSpikeNumber(spikeNumber, x, y)

@@ -1,5 +1,5 @@
-SAMPLES_LIM = [11 40];
-MOVIES = [1, 3, 5, 7];%1:24;
+SAMPLES_LIM = [8 37];
+MOVIES = 1:2:63;
 THRESHOLDS = 10:5:100;
 ART_TO_PRUNE = 2;
 MINIMAL_CLUSTER = 3;
@@ -21,7 +21,9 @@ fullExcludedIdxMatrices = cell(size(NEURON_IDS));
 fullDetectedSpikesIdxMatrices = cell(size(NEURON_IDS));
 stableThresVectors = cell(size(NEURON_IDS));
 chosenMovies = zeros(size(NEURON_IDS));
-for i = 1%:length(NEURON_IDS);
+%TODO 40th(id: 2017) neuron is causing problems, probably due to not
+% enaough artifacts found
+for i = 1:39%length(NEURON_IDS);
     NEURON_ID = NEURON_IDS(i);
     [ fullMeasureMatrix, fullArtifactIDsMatrix, fullExcludedIDsMatrix, fullSpikesIDsMatrix, ...
         fullClustArtNumVec, stableThresVec, spikesDetectedVec, fullSpikesDetectedIdxMat, movieIdx] = ...
@@ -45,17 +47,17 @@ thresDict = containers.Map(NEURON_IDS, stableThresVectors);
 movieDict = containers.Map(NEURON_IDS, chosenMovies);
 
 path = 'C:\studia\dane_skrypty_wojtek\ks_functions\512\graph\';
-for NEURON_ID = 3245%NEURON_IDS
+for NEURON_ID = NEURON_IDS(1)%:39)
     allTraces = getTracesForNeuron(NEURON_ID, MOVIES);
     allTracesSubtracted = subtractMeanArtFromMovies(allTraces, artDict(NEURON_ID), thresDict(NEURON_ID), MOVIES);
     nOfSpikesVec = getNOfSpikesForMovies(MOVIES, detectedSpikesDict(NEURON_ID));
 %     [minMovie, maxMovie] = getApplicabilityRangeSpikes(nOfSpikesVec);
     minMovie = 1;
-    maxMovie = 4;
+    maxMovie = 32;
     f = figure();
     set(gcf, 'InvertHardCopy', 'off');
     set(gcf,'PaperUnits','inches','PaperPosition',[0 0 17.0667  9.6000])
-    plotAppTracesForNeuronSpike(NEURON_ID, detectedSpikesDict(NEURON_ID), artDict(NEURON_ID), ...
+    plotAppTracesForNeuronSpike512(NEURON_ID, detectedSpikesDict(NEURON_ID), artDict(NEURON_ID), ...
         spikeDict(NEURON_ID), thresDict(NEURON_ID), allTracesSubtracted, MOVIES, minMovie, maxMovie, movieDict(NEURON_ID), THRESHOLDS)
     axes('position',[0,0,1,1],'visible','off');
     text(.5, 0.99, sprintf('Traces and applicability range for neuron: %d', NEURON_ID), ...
