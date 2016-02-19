@@ -12,7 +12,7 @@ algoHandle = @(traces, threshold) nDRWplusPruning(traces, threshold, 5, ART_TO_P
 measureHandle = @cmpDiffMeasureVec;
 thresBreach20 = @(simValuesVec) thresholdBreachFunc(simValuesVec, 30);
 global NEURON_SPIKE_AMP_MAP
-AMP_DICT = NEURON_SPIKE_AMP_MAP;
+SPIKE_DETECTION_THRES_DICT = createDetectionThresFromSpikeAmp(NEURON_SPIKE_AMP_MAP);
 COLOR_AXIS_LIM = [0 300];
 global NEURON_IDS
 fullArtIdxMatrices = cell(size(NEURON_IDS));
@@ -23,11 +23,12 @@ stableThresVectors = cell(size(NEURON_IDS));
 chosenMovies = zeros(size(NEURON_IDS));
 %TODO 40th(id: 2017) neuron is causing problems, probably due to not
 % enaough artifacts found
-for i = 1:39%length(NEURON_IDS);
+for i = 1:length(NEURON_IDS);
     NEURON_ID = NEURON_IDS(i);
     [ fullMeasureMatrix, fullArtifactIDsMatrix, fullExcludedIDsMatrix, fullSpikesIDsMatrix, ...
         fullClustArtNumVec, stableThresVec, spikesDetectedVec, fullSpikesDetectedIdxMat, movieIdx] = ...
-        holisticAlgo1(NEURON_ID, MOVIES, THRESHOLDS, SAMPLES_LIM, algoHandle, measureHandle, thresBreach20, MINIMAL_CLUSTER, SPIKE_DET_MARG, HOW_MANY_SPIKES);
+        holisticAlgo1(NEURON_ID, MOVIES, THRESHOLDS, SAMPLES_LIM, algoHandle, measureHandle,...
+        thresBreach20, MINIMAL_CLUSTER, HOW_MANY_SPIKES, SPIKE_DETECTION_THRES_DICT(NEURON_ID));
     fullArtIdxMatrices{i} = fullArtifactIDsMatrix;
     fullSpikeIdxMatrices{i} = fullSpikesIDsMatrix;
     fullExcludedIdxMatrices{i} = fullExcludedIDsMatrix;
@@ -47,7 +48,7 @@ thresDict = containers.Map(NEURON_IDS, stableThresVectors);
 movieDict = containers.Map(NEURON_IDS, chosenMovies);
 
 path = 'C:\studia\dane_skrypty_wojtek\ks_functions\512\graph\';
-for NEURON_ID = NEURON_IDS(1)%:39)
+for NEURON_ID = NEURON_IDS
     allTraces = getTracesForNeuron(NEURON_ID, MOVIES);
     allTracesSubtracted = subtractMeanArtFromMovies(allTraces, artDict(NEURON_ID), thresDict(NEURON_ID), MOVIES);
     nOfSpikesVec = getNOfSpikesForMovies(MOVIES, detectedSpikesDict(NEURON_ID));
@@ -58,7 +59,7 @@ for NEURON_ID = NEURON_IDS(1)%:39)
     set(gcf, 'InvertHardCopy', 'off');
     set(gcf,'PaperUnits','inches','PaperPosition',[0 0 17.0667  9.6000])
     plotAppTracesForNeuronSpike512(NEURON_ID, detectedSpikesDict(NEURON_ID), artDict(NEURON_ID), ...
-        spikeDict(NEURON_ID), thresDict(NEURON_ID), allTracesSubtracted, MOVIES, minMovie, maxMovie, movieDict(NEURON_ID), THRESHOLDS)
+        spikeDict(NEURON_ID), thresDict(NEURON_ID), allTraces, MOVIES, minMovie, maxMovie, movieDict(NEURON_ID), THRESHOLDS)
     axes('position',[0,0,1,1],'visible','off');
     text(.5, 0.99, sprintf('Traces and applicability range for neuron: %d', NEURON_ID), ...
         'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')

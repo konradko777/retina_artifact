@@ -1,4 +1,8 @@
-function electrode = findBestEleFromEI(EI)
-    [~, electrode] = min(min(EI,[], 2));
-    electrode = electrode - 1; %%because of first additional channel which is then ommited in chunked files
+function electrode = findBestEleFromEI(neuron, EI)
+% EI format (nElectrodes x nSamples)
+    global NEURON_ELE_MAP ELE_MAP_OBJ
+    stimEle = NEURON_ELE_MAP(neuron);
+    adjacentEles = ELE_MAP_OBJ.getAdjacentsTo(stimEle,1);
+    [~, electrodePositionIdx] = min(min(EI(adjacentEles + 1, :),[], 2)); %+1 to match the EI format(0th channel)
+    electrode = adjacentEles(electrodePositionIdx);
 end

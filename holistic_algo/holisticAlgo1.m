@@ -1,12 +1,13 @@
 function [ fullMeasureMatrix, fullArtifactIDsMatrix, excludedIDsMatrix, spikesIDsMatrix, fullClustArtNumVec, stableThresVec, spikesDetectedVec, spikesDetectedIdxMat, movieIdx] = ...
-    holisticAlgo1(neuronID, movies, thresholds, samplesLim, algoHandle, measureHandle, breachFunction, minimalCluster, spikeDetMarigin, howManySpikes)
+    holisticAlgo1(neuronID, movies, thresholds, samplesLim, algoHandle, measureHandle, breachFunction, minimalCluster, howManySpikes, spikeDetectionThres)
+
 
 
 [fullMeasureMatrix, fullArtifactIDsMatrix, excludedIDsMatrix, spikesIDsMatrix, fullClustArtNumVec] = cmpMeasureForNeuronStruct(neuronID, movies, thresholds, samplesLim, algoHandle, measureHandle);
 stableThresholdsMat = getMinStableThresForMovies(fullMeasureMatrix, movies, thresholds, breachFunction, minimalCluster);
 stableThresVec = chooseStableThresIdx(stableThresholdsMat);
 
-[spikesDetectedVec,  spikesDetectedIdxMat] = detectSpikesForNeuron(neuronID, movies, fullArtifactIDsMatrix, stableThresVec, spikeDetMarigin, samplesLim);
+[spikesDetectedVec,  spikesDetectedIdxMat] = detectSpikesForNeuron(neuronID, movies, fullArtifactIDsMatrix, stableThresVec, samplesLim, spikeDetectionThres);
 movieIdx = chooseMovie(spikesDetectedVec, howManySpikes);
 
 

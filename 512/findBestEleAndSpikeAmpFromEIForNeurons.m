@@ -6,8 +6,8 @@ function [electrodes, spikeAmps]= findBestEleAndSpikeAmpFromEIForNeurons(neurons
     i = 1;
     for neuron = neurons
         ei = getEIForNeuron(neuron);
-        electrodes(i) = findBestEleFromEI(ei);
-        spikeAmps(i) = findSpikeAmpFromEI(ei);
+        electrodes(i) = findBestEleFromEI(neuron, ei);
+        spikeAmps(i) = findSpikeAmpFromEI(electrodes(i), ei); %dopisac
         i = i + 1;
     end
 end

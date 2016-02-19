@@ -50,7 +50,7 @@ function plotAppTracesForNeuronSpike512(neuronID, moviesSpikesIDsMatrix, fullArt
 end
 
 function plotCircle(x, y, color)
-    plot(x, y, '.', 'color', color, 'MarkerSize', 40);
+    plot(x, y, '.', 'color', color, 'MarkerSize', 25);
 end
 
 function plotSpikeNumber(spikeNumber, x, y)

@@ -10,12 +10,15 @@ function [ resultStruct] = nDRWplusPruning(Waveforms, QuantTh, nDRW, artToPrune,
         tmpArtifact = Waveforms(iWave,:);
         numberOfDRW(iWave) = nDRWFunction(Waveforms, tmpArtifact, QuantTh, samplesLim);
     end
-        artifacts = tracesIDs(numberOfDRW < nDRW);
+    artifacts = tracesIDs(numberOfDRW < nDRW);
     spikes = setdiff(1:nWaveforms, artifacts);
-    excluded = pruneExtremeArtifacts(Waveforms, artifacts, artToPrune, samplesLim);
     if length(artifacts) > artToPrune
+        excluded = pruneExtremeArtifacts(Waveforms, artifacts, artToPrune, samplesLim);
         artifacts = setdiff(artifacts, excluded);
+    elseif isempty(artifacts)
+        error('No artifacts were found');
     else
+        excluded = [];
         disp('Not enough artifacts to prune');
     end
     resultStruct.artifactIDs = artifacts;
