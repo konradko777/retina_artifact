@@ -39,13 +39,16 @@ end
 
 
 function meanArtifacts = computeMeanArtifacts(oneChannelTraces, artifactIDsMatrix)
-    oneChannelTraces = squeeze(oneChannelTraces); %%%% dlaczego w danych 512 trzeba to wprowadzac???!!!
+    oneChannelTraces = squeeze(oneChannelTraces);
     size(oneChannelTraces);
     traceLength = size(oneChannelTraces, 2);
     meanArtifacts = zeros(length(artifactIDsMatrix), traceLength);
     for  i = 1:length(artifactIDsMatrix)
         artifacts = artifactIDsMatrix{i};
-        
-        meanArtifacts(i, :) = mean(oneChannelTraces(artifacts, :));
+        if length(artifacts) == 1
+            meanArtifacts(i, :) = oneChannelTraces(artifacts, :);
+        else
+            meanArtifacts(i, :) = mean(oneChannelTraces(artifacts, :)); % w przypadku gdy nie znajduje artefaktow, wynik jest NaN-em
+        end
     end
 end

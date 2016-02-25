@@ -16,7 +16,8 @@ function [ resultStruct] = nDRWplusPruning(Waveforms, QuantTh, nDRW, artToPrune,
         excluded = pruneExtremeArtifacts(Waveforms, artifacts, artToPrune, samplesLim);
         artifacts = setdiff(artifacts, excluded);
     elseif isempty(artifacts)
-        error('No artifacts were found');
+        excluded = [];
+        disp('No artifacts were found');
     else
         excluded = [];
         disp('Not enough artifacts to prune');

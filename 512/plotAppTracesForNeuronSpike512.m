@@ -1,5 +1,5 @@
 function plotAppTracesForNeuronSpike512(neuronID, moviesSpikesIDsMatrix, fullArtIdxMat, fullSpikeIdxMat, stableThresholdsVec,allTraces, movies, ...
-    firstMovie, lastMovie, chosenMovie, thresholds)
+    firstMovie, lastMovie, chosenMovie, thresholds, nOfSpikesDetectedVec)
     i = 1;
     OFFSET = 30;
     N_OF_TRACES = 50;
@@ -17,24 +17,30 @@ function plotAppTracesForNeuronSpike512(neuronID, moviesSpikesIDsMatrix, fullArt
         hold on
         traces = squeeze(allTraces(i, :, :));
         movieSpikes = moviesSpikesIDsMatrix{i};
-        movieNotSpikes = allTracesIdx;
-        movieNotSpikes(movieSpikes) = [];
-        step1Spikes = fullSpikeIdxMat{i}{stableThresIdx};
-        step1Arts = fullArtIdxMat{i}{stableThresIdx};
-        nOfSpikes = length(movieSpikes);
+        nOfSpikes = nOfSpikesDetectedVec(i);
+        if ismember(nOfSpikes, [-1, -2])
+            plotSelectedTraces(traces, allTracesIdx, 'k')
+        else
+            
+            movieNotSpikes = allTracesIdx;
+            movieNotSpikes(movieSpikes) = [];
+            step1Spikes = fullSpikeIdxMat{i}{stableThresIdx};
+            step1Arts = fullArtIdxMat{i}{stableThresIdx};
+            bothSpikes = intersect(movieSpikes, step1Spikes);
+            bothArts = intersect(movieNotSpikes, step1Arts);
+            onlyStep2Arts = setdiff(movieNotSpikes,step1Arts);
+            onlyStep2Spikes = setdiff(movieSpikes, step1Spikes);
+            plotSelectedTraces(traces, bothSpikes, 'g')
+            plotSelectedTraces(traces, onlyStep2Arts, 'm')
+            plotSelectedTraces(traces, bothArts, 'r')
+            plotSelectedTraces(traces, onlyStep2Spikes, 'c')
+        end
         
-        bothSpikes = intersect(movieSpikes, step1Spikes);
-        bothArts = intersect(movieNotSpikes, step1Arts);
-        onlyStep2Arts = setdiff(movieNotSpikes,step1Arts);
-        onlyStep2Spikes = setdiff(movieSpikes, step1Spikes);
         if i ~= 25
             set(ms, 'xticklabel', '')
             set(ms, 'yticklabel', '')
         end
-        plotSelectedTraces(traces, bothSpikes, 'g')
-        plotSelectedTraces(traces, onlyStep2Arts, 'm')
-        plotSelectedTraces(traces, bothArts, 'r')
-        plotSelectedTraces(traces, onlyStep2Spikes, 'c')
+
         
         if i <= lastMovie && i >= firstMovie
             plotCircle(10, max_y - OFFSET, 'g')
@@ -43,7 +49,7 @@ function plotAppTracesForNeuronSpike512(neuronID, moviesSpikesIDsMatrix, fullArt
                 markMovie(min_y, max_y, ms);
         end
         plotSpikeNumber(nOfSpikes, 35, max_y - OFFSET);
-        threshold = thresholds(stableThresIdx);
+%         threshold = thresholds(stableThresIdx);
 %         plotThreshold(threshold, 35, max_y - 2*OFFSET);
         i = i + 1;
     end
@@ -54,7 +60,13 @@ function plotCircle(x, y, color)
 end
 
 function plotSpikeNumber(spikeNumber, x, y)
-    text(x, y, sprintf('SF: %d', spikeNumber));
+    if spikeNumber == -1
+        text(x, y, 'SF: No artifacts');
+    elseif spikeNumber == -2
+        text(x, y, 'SF: No stable thres');
+    else
+        text(x, y, sprintf('SF: %d', spikeNumber));
+    end
 end
 
 function plotThreshold(threshold, x, y)

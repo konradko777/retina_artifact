@@ -9,7 +9,11 @@ function [spikesDetectedVec, spikesDetectedIdxVec] = detectSpikesForNeuron(...
         movie = movies(i);
         movieArtIDs = fullAlgoArtIDs{i};
         movieStableThresIdx = stableThresForMovie(i);
-        if ~movieStableThresIdx
+        if isempty(movieArtIDs)
+            spikesDetectedVec(i) = -1;
+            continue
+        elseif ~movieStableThresIdx
+            spikesDetectedVec(i) = -2;
             continue
         end
         thresArtIDs = movieArtIDs{movieStableThresIdx};

@@ -1,4 +1,7 @@
 function avgArtifact = getAvgArtifactFromAlgo(traces, artifactIDs)
-    avgArtifact = mean(traces(artifactIDs, :));
-
+    if length(artifactIDs) == 1
+        avgArtifact = traces(artifactIDs, :);
+    else
+        avgArtifact = mean(traces(artifactIDs, :));
+    end
 end

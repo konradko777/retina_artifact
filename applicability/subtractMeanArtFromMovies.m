@@ -1,18 +1,19 @@
-function allTracesSubtracted = subtractMeanArtFromMovies(allMovieTraces, fullArtIdxMat, stableThresholdVec, movies)
+function allTracesSubtracted = subtractMeanArtFromMovies(allMovieTraces, fullArtIdxMat, stableThresholdVec, movies, nOfSpikesDetVec)
     allTracesSubtracted = zeros(size(allMovieTraces));
     for i = 1:length(movies)
         movieTraces = squeeze(allMovieTraces(i, : ,:));
-        movieArtIdx = fullArtIdxMat{i}{stableThresholdVec(i)};
-        if length(movieArtIdx) == 1
-            meanArt = movieTraces(movieArtIdx, :);
+        nOfSpikes = nOfSpikesDetVec(i);
+        if ismember(nOfSpikes, [-1, -2]) %if proper detection of spikes is not possible, simple mean is subtracted for plotting reasons
+            allTracesSubtracted(i, :, :) = movieTraces - repmat(mean(movieTraces), size(movieTraces, 1), 1);
+            continue
         else
-            meanArt = mean(movieTraces(movieArtIdx, :));
+            movieArtIdx = fullArtIdxMat{i}{stableThresholdVec(i)};
+            if length(movieArtIdx) == 1
+                meanArt = movieTraces(movieArtIdx, :);
+            else
+                meanArt = mean(movieTraces(movieArtIdx, :));
+            end
         end
-%         stableThresholdVec(movies)
-%         size(meanArt)
-%         size(movieTraces)
         allTracesSubtracted(i, :, :) = movieTraces - repmat(meanArt, size(movieTraces, 1), 1);
-        
     end
-
 end
