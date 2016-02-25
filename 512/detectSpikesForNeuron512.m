@@ -1,5 +1,5 @@
-function [spikesDetectedVec, spikesDetectedIdxVec] = detectSpikesForNeuron(...
-    neuronID, movies, fullAlgoArtIDs, stableThresForMovie, sampleLim, spikeDetectionThres)
+function [spikesDetectedVec, spikesDetectedIdxVec] = detectSpikesForNeuron512(...
+    recordingElectrode, stimElectrode, movies, fullAlgoArtIDs, stableThresForMovie, sampleLim, spikeDetectionThres)
 %spikeDetMArigin - by how much resulting waveform's minimum can differ from
 %   neuron amplitude to be still classified as TODO watch out for '-' sign
 %   complications, mayby percentwise solution is Better?
@@ -18,8 +18,7 @@ function [spikesDetectedVec, spikesDetectedIdxVec] = detectSpikesForNeuron(...
         end
         thresArtIDs = movieArtIDs{movieStableThresIdx};
 %         spikeAmplitude = neuronSpikeAmpDict(neuronID);
-        error('Popraw linijke ponizej, sczytuje przebiegi ze zlej elektrody, -> funkcja getMovieElePatternTraces');
-        traces = getTracesForNeuronMovie(neuronID, movie);
+        traces = getMovieElePatternTraces(movie, recordingElectrode, stimElectrode );
         avgArtifact = getAvgArtifactFromAlgo(traces, thresArtIDs);
         [spikesDetectedVec(i), spikesDetectedLogVec] = detectSpikesForMovie(traces, avgArtifact, spikeDetectionThres, sampleLim);
         spikesDetectedIdxVec{i} = logical2indices(spikesDetectedLogVec);

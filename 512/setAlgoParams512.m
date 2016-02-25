@@ -51,8 +51,12 @@ thresDict = containers.Map(NEURON_IDS, stableThresVectors);
 movieDict = containers.Map(NEURON_IDS, chosenMovies);
 nOfSpikesDetDict = containers.Map(NEURON_IDS, nOfSpikesDetected);
 
+global NEURON_REC_ELE_MAP
 path = 'C:\studia\dane_skrypty_wojtek\ks_functions\512\graph\';
-for NEURON_ID = NEURON_IDS(1:70)
+for NEURON_ID = NEURON_IDS(36:70)
+    eiSpike = getEISpikeForNeuronEle(NEURON_ID, NEURON_REC_ELE_MAP(NEURON_ID));
+    eiSpikeAmp = NEURON_SPIKE_AMP_MAP(NEURON_ID);
+    detectionThres = SPIKE_DETECTION_THRES_DICT(NEURON_ID);
     allTraces = getTracesForNeuron(NEURON_ID, MOVIES);
     nOfSpikesVec = nOfSpikesDetDict(NEURON_ID);
     allTracesSubtracted = subtractMeanArtFromMovies(allTraces, artDict(NEURON_ID), thresDict(NEURON_ID), MOVIES, nOfSpikesVec);
@@ -61,7 +65,8 @@ for NEURON_ID = NEURON_IDS(1:70)
     set(gcf, 'InvertHardCopy', 'off');
     set(gcf,'PaperUnits','inches','PaperPosition',[0 0 17.0667  9.6000])
     plotAppTracesForNeuronSpike512(NEURON_ID, detectedSpikesDict(NEURON_ID), artDict(NEURON_ID), ...
-        spikeDict(NEURON_ID), thresDict(NEURON_ID), allTraces, MOVIES, minMovie, maxMovie, movieDict(NEURON_ID), THRESHOLDS, nOfSpikesVec)
+        spikeDict(NEURON_ID), thresDict(NEURON_ID), allTracesSubtracted, MOVIES, minMovie, maxMovie,...
+        movieDict(NEURON_ID), THRESHOLDS, nOfSpikesVec, eiSpike, eiSpikeAmp, detectionThres)
     axes('position',[0,0,1,1],'visible','off');
     text(.5, 0.99, sprintf('Traces and applicability range for neuron: %d', NEURON_ID), ...
         'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')

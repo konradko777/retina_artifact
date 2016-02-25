@@ -1,5 +1,5 @@
 function plotAppTracesForNeuronSpike512(neuronID, moviesSpikesIDsMatrix, fullArtIdxMat, fullSpikeIdxMat, stableThresholdsVec,allTraces, movies, ...
-    firstMovie, lastMovie, chosenMovie, thresholds, nOfSpikesDetectedVec)
+    firstMovie, lastMovie, chosenMovie, thresholds, nOfSpikesDetectedVec, eiSpike, spikeAmp, detThres)
     i = 1;
     OFFSET = 30;
     N_OF_TRACES = 50;
@@ -48,12 +48,25 @@ function plotAppTracesForNeuronSpike512(neuronID, moviesSpikesIDsMatrix, fullArt
         if i == chosenMovie
                 markMovie(min_y, max_y, ms);
         end
+        plot(eiSpike, '--b', 'linewidth', 2)
+        plotSpikeAmpAndThres(spikeAmp, detThres)
         plotSpikeNumber(nOfSpikes, 35, max_y - OFFSET);
-%         threshold = thresholds(stableThresIdx);
-%         plotThreshold(threshold, 35, max_y - 2*OFFSET);
+        if nOfSpikes < 0
+            plotThreshold(-1, 35, max_y - 2*OFFSET);
+        else
+            threshold = thresholds(stableThresIdx);
+            plotThreshold(threshold, 35, max_y - 2*OFFSET);
+        end
         i = i + 1;
     end
 end
+
+function plotSpikeAmpAndThres(spikeAmp, detectionThres)
+    line(xlim, [spikeAmp spikeAmp], 'color', 'b')
+    line(xlim, [detectionThres detectionThres], 'color', 'k')
+
+end
+
 
 function plotCircle(x, y, color)
     plot(x, y, '.', 'color', color, 'MarkerSize', 25);
@@ -70,7 +83,7 @@ function plotSpikeNumber(spikeNumber, x, y)
 end
 
 function plotThreshold(threshold, x, y)
-    text(x, y, sprintf('SF: %d', threshold));
+    text(x, y, sprintf('TH: %d', threshold));
 end
 
 
