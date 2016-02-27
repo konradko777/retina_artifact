@@ -1,8 +1,21 @@
-positions = createHexagonalPositionMap(.37, .4, .13, .25, .20, .05);
-positions2 = createHexagonalPositionMap(.50, .4, .13, .25, .20, .05);
+function value = test(resCell, fieldName)
+    extracted = cellfun(@(res) extractFieldName(res, fieldName), resCell, 'UniformOutput', false);
+    empty = cellfun(@isempty, extracted);
+    value = extracted(1, ~empty);
+end
 
-for i = 1:size(positions,1)
-    subplot('position', positions(i, :))
-    subplot('position', positions2(i, :), 'yticklabel', '')
-    
+function samples = getSamples(resCell, fieldName)
+    extracted = cellfun(@(res) extractFieldName(res, fieldName), resCell, 'UniformOutput', false);
+    empty = cellfun(@isempty, extracted);
+    samples = cell2mat(extracted(1, ~empty));
+    samples = samples(:);
+
+end
+
+function value = extractFieldName(res, fieldName)
+    if res.bestMovieIdx > 0
+        value = getfield(res, fieldName);
+    else
+        value = [];
+    end
 end

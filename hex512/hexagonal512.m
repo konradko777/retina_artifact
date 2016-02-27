@@ -17,41 +17,47 @@ COLOR_AXIS_LIM = [0 300];
 N_OF_TRACES = 50;
 
 
-NEURON_ID = NEURON_IDS(1);
-stimEle = NEURON_ELE_MAP(NEURON_ID);
-recEle = NEURON_REC_ELE_MAP(NEURON_ID);
-adjacentElectrodes = getAdjacentElectrodes(recEle, ELE_MAP_OBJ);
-eleRelativePositionDict = createPositionDictForAdjEles(recEle, ELE_MAP_OBJ);
-
-resultStructs = {};
-i = 1;
-for currentStimEle = adjacentElectrodes'
-    currentStimEle
-    [ fullMeasureMatrix, fullArtifactIDsMatrix, fullExcludedIDsMatrix, fullSpikesIDsMatrix, ...
-        fullClustArtNumVec, stableThresVec, spikesDetectedVec, fullSpikesDetectedIdxMat, movieIdx] = ...
-        holisticAlgo512(MOVIES, THRESHOLDS, SAMPLES_LIM, algoHandle, measureHandle,...
-        thresBreach20, MINIMAL_CLUSTER, HOW_MANY_SPIKES, SPIKE_DETECTION_THRES_DICT(NEURON_ID), recEle, currentStimEle);
-    result.bestMovieIdx = findBestMovie(spikesDetectedVec);
-    if result.bestMovieIdx > 0
-        result.stableThresIdx = stableThresVec(bestMovieIdx);
-        result.firstStepArt= fullArtifactIDsMatrix{result.bestMovieIdx}{result.stableThresIdx};
-        result.firstStepSpikes = fullSpikesIDsMatrix{result.bestMovieIdx}{result.stableThresIdx};
-        result.secondStepSpikes = fullSpikesDetectedIdxMat{result.bestMovieIdx};
-        result.secondStepArts = setdiff(1:N_OF_TRACES, result.secondStepSpikes);
-        result.bestMovieTraces = getMovieElePatternTraces(MOVIES(result.bestMovieIdx), recEle, currentStimEle);
-        result.subtractedTraces = subtractMeanArtFromMovieTraces(result.bestMovieTraces, result.firstStepArt);
+for NEURON_ID = NEURON_IDS(11:70)
+    recEle = NEURON_REC_ELE_MAP(NEURON_ID);
+    stimEle = NEURON_ELE_MAP(NEURON_ID);
+    eiSpike = getEISpikeForNeuronEle(NEURON_ID, NEURON_REC_ELE_MAP(NEURON_ID));
+    eiSpikeAmp = NEURON_SPIKE_AMP_MAP(NEURON_ID);
+    detectionThres = SPIKE_DETECTION_THRES_DICT(NEURON_ID);
+    adjacentElectrodes = getAdjacentElectrodes(recEle, ELE_MAP_OBJ);
+    eleRelativePositionDict = createPositionDictForAdjEles(recEle, ELE_MAP_OBJ);
+    resultStructs = {};
+    i = 1;
+    for currentStimEle = adjacentElectrodes'
+        currentStimEle
+        [ fullMeasureMatrix, fullArtifactIDsMatrix, fullExcludedIDsMatrix, fullSpikesIDsMatrix, ...
+            fullClustArtNumVec, stableThresVec, spikesDetectedVec, fullSpikesDetectedIdxMat, movieIdx] = ...
+            holisticAlgo512(MOVIES, THRESHOLDS, SAMPLES_LIM, algoHandle, measureHandle,...
+            thresBreach20, MINIMAL_CLUSTER, HOW_MANY_SPIKES, SPIKE_DETECTION_THRES_DICT(NEURON_ID), recEle, currentStimEle);
+        result.bestMovieIdx = findBestMovie(spikesDetectedVec);
+        if result.bestMovieIdx > 0
+            result.stableThresIdx = stableThresVec(result.bestMovieIdx);
+            result.firstStepArt= fullArtifactIDsMatrix{result.bestMovieIdx}{result.stableThresIdx};
+            result.firstStepSpikes = fullSpikesIDsMatrix{result.bestMovieIdx}{result.stableThresIdx};
+            result.secondStepSpikes = fullSpikesDetectedIdxMat{result.bestMovieIdx};
+            result.secondStepArts = setdiff(1:N_OF_TRACES, result.secondStepSpikes);
+            result.bestMovieTraces = getMovieElePatternTraces(MOVIES(result.bestMovieIdx), recEle, currentStimEle);
+            result.subtractedTraces = subtractMeanArtFromMovieTraces(result.bestMovieTraces, result.firstStepArt);
+            result.spikesDetected = spikesDetectedVec(result.bestMovieIdx);
+        end
+        resultStructs{i} = result;
+        clear result;
+        i = i + 1;
     end
-    resultStructs{i} = result;
-    clear result;
-    i = i + 1;
+
+    path = 'C:\studia\dane_skrypty_wojtek\ks_functions\hex512\graph\';
+    f = figure();
+    set(gcf, 'InvertHardCopy', 'off');
+    set(gcf,'PaperUnits','inches','PaperPosition',[0 0 17.0667  9.6000])
+    plotHexagonally(adjacentElectrodes, resultStructs, eiSpike, eiSpikeAmp, detectionThres, stimEle)
+    axes('position',[0,0,1,1],'visible','off');
+    text(.5, 0.99, sprintf('Neuron: %d', NEURON_ID), ...
+        'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')
+    neuronStr = num2str(NEURON_ID);
+    print([path neuronStr '_range'], '-dpng', '-r150');
+    close(f)
 end
-% resultStructsDict = containers.Map(adjacentElectrodes, resultStructs);
-plotHexagonally(adjacentElectrodes, resultStructs)
-% result.traces = getMovieEleTraces(MOVIES(result.bestMovieIdx), 
-% fullArtIdxMatrices{i} = fullArtifactIDsMatrix;
-% fullSpikeIdxMatrices{i} = fullSpikesIDsMatrix;
-% fullExcludedIdxMatrices{i} = fullExcludedIDsMatrix;
-% fullDetectedSpikesIdxMatrices{i} = fullSpikesDetectedIdxMat;
-% chosenMovies(i) = 0;%movieIdx;
-% stableThresVectors{i} = stableThresVec;
-% nOfSpikesDetected{i} = spikesDetectedVec;
