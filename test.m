@@ -1,21 +1,11 @@
-function value = test(resCell, fieldName)
-    extracted = cellfun(@(res) extractFieldName(res, fieldName), resCell, 'UniformOutput', false);
-    empty = cellfun(@isempty, extracted);
-    value = extracted(1, ~empty);
-end
+global NEURON_THRES_FILE_MOVIE_MAP
 
-function samples = getSamples(resCell, fieldName)
-    extracted = cellfun(@(res) extractFieldName(res, fieldName), resCell, 'UniformOutput', false);
-    empty = cellfun(@isempty, extracted);
-    samples = cell2mat(extracted(1, ~empty));
-    samples = samples(:);
+neuronsToCheck = [349, 1908, 3605, 7638];
+neuronsToCheck = [110, 3245];
 
-end
-
-function value = extractFieldName(res, fieldName)
-    if res.bestMovieIdx > 0
-        value = getfield(res, fieldName);
-    else
-        value = [];
+for neuron = keys(NEURON_THRES_FILE_MOVIE_MAP)
+    neuron = neuron{1};
+    if ~NEURON_THRES_FILE_MOVIE_MAP(neuron)
+        neuron
     end
 end

@@ -48,6 +48,9 @@ function plotHexagonally(adjacentEles, resultStructs, eiSpike, eiSpikeAmp, spike
             text(.5, .5, 'Application range', 'horizontalAlignment', 'center')
             set(gca, 'XTickLabel','')
             set(gca, 'YTickLabel','')
+            if currentElectrode == stimEleFromThresFile
+                plotCircle(.8, .8, 'b')
+            end
             title(sprintf('                                                Electrode: %d', currentElectrode))
             subplot('position', sbtrctdPosDict(adjacentEles(i)))
             text(.5, .5, 'not found', 'horizontalAlignment', 'center')
@@ -101,13 +104,13 @@ end
 function [rawPosDict, sbtrctdPosDict] = createMappings(centralElectrode)
     global ELE_MAP_OBJ
     eleRelPosMap = createPositionDictForAdjEles(centralElectrode, ELE_MAP_OBJ);
-    relPosPlotPosRawDict = createHexagonalPositionMap(.37, .4, .13, .25, .20, .05);
-    relPosPlotPosSbtrDict = createHexagonalPositionMap(.50, .4, .13, .25, .20, .05);
+    relPosPlotPosRawDict = createHexagonalPositionMap(.365, .4, .13, .25, .20, .05);
+    relPosPlotPosSbtrDict = createHexagonalPositionMap(.505, .4, .13, .25, .20, .05);
     electrodeKeys = values(eleRelPosMap);
     rawPosDict = containers.Map('keytype', 'int32', 'valuetype', 'any');
     sbtrctdPosDict = containers.Map('keytype', 'int32', 'valuetype', 'any');
     for electrodeCell = keys(eleRelPosMap)
-        electrode = electrodeCell{1}
+        electrode = electrodeCell{1};
         rawPosDict(electrode) = relPosPlotPosRawDict(eleRelPosMap(electrode));
         sbtrctdPosDict(electrode) = relPosPlotPosSbtrDict(eleRelPosMap(electrode));
     end
