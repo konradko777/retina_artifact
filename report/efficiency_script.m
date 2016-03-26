@@ -1,18 +1,22 @@
-SAMPLES_LIM = [11 40];
-MOVIES = 1:24;
+tic
+SAMPLES_LIM = [8 37];
+MOVIES = 1:2:63;
 THRESHOLDS = 10:5:100;
 ART_TO_PRUNE = 2;
 MINIMAL_CLUSTER = 3;
 SPIKE_DET_MARG = 30;
 HOW_MANY_SPIKES = 25;
-PATH_ROOT = 'C:\studia\dane_skrypty_wojtek\ks_functions\report\';
+PATH_ROOT = 'C:\studia\dane_skrypty_wojtek\ks_functions\512\';
 addJava
-setGlobals
+setGlobals512
 algoHandle = @(traces, threshold) nDRWplusPruning(traces, threshold, 5, ART_TO_PRUNE, SAMPLES_LIM);
 measureHandle = @cmpDiffMeasureVec;
 thresBreach20 = @(simValuesVec) thresholdBreachFunc(simValuesVec, 30);
-SPIKE_DETECTION_THRES_DICT = createNeuronSpikeAmpDict();
-global NEURON_IDS NEURON_ELE_MAP NEURON_REC_ELE_MAP
+global NEURON_SPIKE_AMP_MAP
+SPIKE_DETECTION_THRES_DICT = createDetectionThresFromSpikeAmp(NEURON_SPIKE_AMP_MAP);
+COLOR_AXIS_LIM = [0 300];
+global NEURON_IDS
+global NEURON_REC_ELE_MAP NEURON_ELE_MAP
 fullArtIdxMatrices = cell(size(NEURON_IDS));
 fullSpikeIdxMatrices = cell(size(NEURON_IDS));
 fullExcludedIdxMatrices = cell(size(NEURON_IDS));
@@ -20,15 +24,16 @@ fullDetectedSpikesIdxMatrices = cell(size(NEURON_IDS));
 stableThresVectors = cell(size(NEURON_IDS));
 chosenMovies = zeros(size(NEURON_IDS));
 nOfSpikesDetected = cell(size(NEURON_IDS));
-for i = 1%:length(NEURON_IDS);
+%TODO 40th(id: 2017) neuron is causing problems, probably due to not
+% enaough artifacts found
+for i = 1:length(NEURON_IDS);
     i
-    NEURON_ID = 227% NEURON_IDS(i);
-    THRESHOLDS = 10:10:150;
+    NEURON_ID = NEURON_IDS(i);
     [ fullMeasureMatrix, fullArtifactIDsMatrix, fullExcludedIDsMatrix, fullSpikesIDsMatrix, ...
         fullClustArtNumVec, stableThresVec, spikesDetectedVec, fullSpikesDetectedIdxMat, movieIdx] = ...
         holisticAlgo512(MOVIES, THRESHOLDS, SAMPLES_LIM, algoHandle, measureHandle,...
-        thresBreach20, MINIMAL_CLUSTER, HOW_MANY_SPIKES, SPIKE_DETECTION_THRES_DICT(NEURON_ID), ...
-        NEURON_REC_ELE_MAP(NEURON_ID), NEURON_ELE_MAP(NEURON_ID) );
+        thresBreach20, MINIMAL_CLUSTER, HOW_MANY_SPIKES, SPIKE_DETECTION_THRES_DICT(NEURON_ID),...
+        NEURON_REC_ELE_MAP(NEURON_ID), NEURON_ELE_MAP(NEURON_ID));
     fullArtIdxMatrices{i} = fullArtifactIDsMatrix;
     fullSpikeIdxMatrices{i} = fullSpikesIDsMatrix;
     fullExcludedIdxMatrices{i} = fullExcludedIDsMatrix;
@@ -40,7 +45,7 @@ for i = 1%:length(NEURON_IDS);
 %         fullMeasureMatrix, fullArtifactIDsMatrix, fullClustArtNumVec, ...
 %         stableThresVec, spikesDetected, movieIdx, PATH_ROOT, COLOR_AXIS_LIM)
 end
-
+toc
 artDict = containers.Map(NEURON_IDS, fullArtIdxMatrices);
 spikeDict = containers.Map(NEURON_IDS, fullSpikeIdxMatrices);
 excludedDict = containers.Map(NEURON_IDS, fullExcludedIdxMatrices);
@@ -48,12 +53,11 @@ detectedSpikesDict = containers.Map(NEURON_IDS, fullDetectedSpikesIdxMatrices);
 thresDict = containers.Map(NEURON_IDS, stableThresVectors);
 movieDict = containers.Map(NEURON_IDS, chosenMovies);
 nOfSpikesDetDict = containers.Map(NEURON_IDS, nOfSpikesDetected);
-
-
-
-
+efficiencyMoviesDict = createHalfFullThresAmpIdxDict(nOfSpikesDetDict);
 path = 'C:\studia\dane_skrypty_wojtek\ks_functions\report\graph\';
 for NEURON_ID = NEURON_IDS
+    eiSpike = getEISpikeForNeuronEle(NEURON_ID, NEURON_REC_ELE_MAP(NEURON_ID));
+    eiSpikeAmp = NEURON_SPIKE_AMP_MAP(NEURON_ID);
     detectionThres = SPIKE_DETECTION_THRES_DICT(NEURON_ID);
     allTraces = getTracesForNeuron(NEURON_ID, MOVIES);
     nOfSpikesVec = nOfSpikesDetDict(NEURON_ID);
@@ -62,13 +66,28 @@ for NEURON_ID = NEURON_IDS
     f = figure();
     set(gcf, 'InvertHardCopy', 'off');
     set(gcf,'PaperUnits','inches','PaperPosition',[0 0 17.0667  9.6000])
-    plotAppTracesForNeuronSpike(NEURON_ID, detectedSpikesDict(NEURON_ID), artDict(NEURON_ID), ...
-        spikeDict(NEURON_ID), thresDict(NEURON_ID), allTraces, MOVIES, minMovie, maxMovie,...
-        movieDict(NEURON_ID), THRESHOLDS)
+    plotEfficiencyTracesForNeuron(NEURON_ID, detectedSpikesDict(NEURON_ID), artDict(NEURON_ID), ...
+        spikeDict(NEURON_ID), thresDict(NEURON_ID), allTraces, MOVIES,...
+        THRESHOLDS, nOfSpikesVec, eiSpike, eiSpikeAmp, detectionThres, efficiencyMoviesDict(NEURON_ID), 0)
     axes('position',[0,0,1,1],'visible','off');
     text(.5, 0.99, sprintf('Traces and applicability range for neuron: %d', NEURON_ID), ...
         'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')
     neuronStr = num2str(NEURON_ID);
     print([path neuronStr '_range'], '-dpng', '-r150');
+    close(f)
+end
+
+for NEURON_ID = NEURON_IDS
+    f = figure();
+    nOfSpikesVec = nOfSpikesDetDict(NEURON_ID);
+    [minIdx, maxIdx] = getApplicabilityRangeSpikes512(nOfSpikesVec);
+    hold on
+    plot(nOfSpikesVec)
+    ylim([-5 50])
+    line([minIdx minIdx], ylim, 'color', 'g')
+    line([maxIdx maxIdx], ylim, 'color', 'g')
+    neuronStr = num2str(NEURON_ID);
+    title(neuronStr);
+    print([path neuronStr '_det_spikes'], '-dpng', '-r150');
     close(f)
 end

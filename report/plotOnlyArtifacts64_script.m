@@ -20,10 +20,9 @@ fullDetectedSpikesIdxMatrices = cell(size(NEURON_IDS));
 stableThresVectors = cell(size(NEURON_IDS));
 chosenMovies = zeros(size(NEURON_IDS));
 nOfSpikesDetected = cell(size(NEURON_IDS));
-for i = 1%:length(NEURON_IDS);
+for i = 1:length(NEURON_IDS);
     i
-    NEURON_ID = 227% NEURON_IDS(i);
-    THRESHOLDS = 10:10:150;
+    NEURON_ID = NEURON_IDS(i);
     [ fullMeasureMatrix, fullArtifactIDsMatrix, fullExcludedIDsMatrix, fullSpikesIDsMatrix, ...
         fullClustArtNumVec, stableThresVec, spikesDetectedVec, fullSpikesDetectedIdxMat, movieIdx] = ...
         holisticAlgo512(MOVIES, THRESHOLDS, SAMPLES_LIM, algoHandle, measureHandle,...

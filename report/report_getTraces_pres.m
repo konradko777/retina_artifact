@@ -2,9 +2,9 @@
 
 global NEURON_ELE_MAP NEURON_REC_ELE_MAP
 
-NEURON_ID = 76;
-movie = 5;
-thresID = 3;
+NEURON_ID = 227;
+movie = 3;
+thresID = 4;    
 gray = [.3, .3, .3];
 recEle = NEURON_REC_ELE_MAP(NEURON_ID);
 pattern = NEURON_ELE_MAP(NEURON_ID);
@@ -20,6 +20,18 @@ spikeIDs = detectedSpikesDict(NEURON_ID);
 spikeIDs = spikeIDs{movie};
 
 
+%% plot gray traces for 1 movie
+NEURON_ID = 271;
+movie = 10;
+thresID = 4;    
+gray = [.3, .3, .3];
+recEle = NEURON_REC_ELE_MAP(NEURON_ID);
+pattern = NEURON_ELE_MAP(NEURON_ID);
+traces = getMovieElePatternTraces(movie, recEle, pattern);
+traces = traces(:,1:30);
+
+plot(traces', 'color', gray, 'linewidth', 1.5)
+xlabel('Samples', 'fontsize', 30)
 %% 1 2 3 picture
 hold on
 grid on
@@ -28,11 +40,11 @@ set(gca, 'Fontsize', 20)
 plot(traces', 'color', gray)
 plot(traces(artIDs(1), :),'r', 'linewidth', 3)
 plot(traces(spikeIDs(3), :),'g', 'linewidth', 3)
-% plot(traces(spikeIDs(6), :),'b', 'linewidth', 3)
+plot(traces(artIDs(6), :),'b', 'linewidth', 3)
 % plot(traces(spikeIDs(2), :),'m', 'linewidth', 3)
 text(15, -344, '1', 'color', 'r', 'fontsize', 30, 'fontweight', 'bold')
 text(15, -410, '2', 'color', 'g', 'fontsize', 30, 'fontweight', 'bold')
-% text(13.5, -392, '3', 'color', 'b', 'fontsize', 30, 'fontweight', 'bold')
+text(13, -370, '3', 'color', 'b', 'fontsize', 30, 'fontweight', 'bold')
 % text(13, -410, '4', 'color', 'm', 'fontsize', 30, 'fontweight', 'bold')
 xlabel('Samples', 'fontsize', 30)
 
@@ -40,13 +52,13 @@ xlabel('Samples', 'fontsize', 30)
 %% 1 - 2
 one = traces(artIDs(1), :);
 two = traces(spikeIDs(3), :);
-three = traces(spikeIDs(6), :);
+three = traces(artIDs(6), :);
 four = traces(spikeIDs(2), :);
 
 hold on
-plotOneMinusTwo(one, two, 'r', 'g')
-plotOneMinusTwo(three, two, 'b', 'g')
-plotOneMinusTwo(two, four, 'g', 'm')
+% plotOneMinusTwo(one, two, 'r', 'g', 30, [-40 120])
+plotOneMinusTwo(one, three, 'b', 'r', 30, [-40 120])
+% plotOneMinusTwo(two, four, 'g', 'm', 0)
 
 %% outliers
 
@@ -127,6 +139,80 @@ correctLegend2(lh, 'g')
 
 xlabel('Samples', 'fontsize', 30)
 set(gca, 'fontsize', 20)
+
+
+%% plot 1 artifact classification 
+
+NEURON_ID = 227;
+movie = 2;
+thresID = 2;
+% excluded = [16, 49]; %% watch out!!!
+
+gray = [.3, .3, .3];
+recEle = NEURON_REC_ELE_MAP(NEURON_ID);
+pattern = NEURON_ELE_MAP(NEURON_ID);
+traces = getMovieElePatternTraces(movie, recEle, pattern);
+tracesTruncated = traces(:, 1:30);
+
+artIDs = artDict(NEURON_ID);
+artIDs = artIDs{movie}{thresID};
+excludedIDs = excludedDict(NEURON_ID);
+excludedIDs = excludedIDs{movie}{thresID}
+
+spikeIDs = detectedSpikesDict(NEURON_ID);
+spikeIDs = spikeIDs{movie};
+
+hold on
+meanArt = mean(traces(artIDs, :));
+notArts = 1:50;
+notArts = setdiff(notArts, artIDs);
+% notArts = setdiff(notArts, excludedIDs);
+artIDs = setdiff(artIDs, excluded);
+plotSelectedTraces2(traces, artIDs, 'r', 1.5)
+% plotSelectedTraces2(traces, excludedIDs, 'b', 1.5)
+plotSelectedTraces(traces, notArts, gray)
+plot(meanArt, 'g--', 'linewidth', 6)
+lh = legend('Artifacts', 'Artifact model');
+correctLegend3(lh, 2, 'g', '--')
+
+xlabel('Samples', 'fontsize', 30)
+set(gca, 'fontsize', 20)
+
+%% plot 3 movie traces
+
+NEURON_ID = 271;
+movie = 8;
+
+
+
+gray = [.3, .3, .3];
+recEle = NEURON_REC_ELE_MAP(NEURON_ID);
+pattern = NEURON_ELE_MAP(NEURON_ID);
+
+
+movies = [1,3, 8, 12, 15, 20];
+i = 0;
+positions = generatePositionDict2(2,3);
+for movie = movies
+    i = i + 1;
+    subplot('position', positions{i})
+    traces = getMovieElePatternTraces(movie, recEle, pattern);
+    plotSelectedTraces2(traces, 1:50, gray, 1)
+    ylim([-550 -200])
+    if i ~= 4
+        set(gca, 'xticklabel', '')
+        set(gca, 'yticklabel', '')
+    else
+        xlabel('Samples', 'fontsize', 15)
+        set(gca, 'fontsize', 15)
+    end
+end
+
+
+
+
+
+
 %% choosing QT all traces movies: 3,5, 15, 19
 
 NEURON_ID = 541;
@@ -259,8 +345,8 @@ plotMeasureSimpleReport(measureMatrix, -10, [20, 25, 60, 90], [0, 300])
 % thresID = 3;
 
 NEURON_ID = 227;
-movie = 3;
-thresID = 19;
+movie = 2;
+thresID = 12;
 
 
 gray = [.3, .3, .3];
@@ -286,6 +372,7 @@ plotMeasureMatWithArts(traces, artIDs, measureMatrix, thresID, THRESHOLDS, [1 30
 %% difference measure + traces tylko do prezentacji (inna THRESHOLDS) inny neuron
 NEURON_ID = 227;
 movie = 2;
+thresID = 10;
 
 
 gray = [.3, .3, .3];
@@ -304,7 +391,6 @@ end
 measureHandle = @cmpDiffMeasureVec;
 measureMatrix = computeMeasureMat(meanArts, measureHandle);
 
-thresID = 11;
 artIDs = artDict(NEURON_ID);
 artIDs = artIDs{movie}{thresID};
 plotMeasureMatWithArts(traces, artIDs, measureMatrix, thresID, THRESHOLDS, [1 30], [0 100])

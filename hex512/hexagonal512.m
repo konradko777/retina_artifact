@@ -15,9 +15,10 @@ thresBreach20 = @(simValuesVec) thresholdBreachFunc(simValuesVec, 30);
 SPIKE_DETECTION_THRES_DICT = createDetectionThresFromSpikeAmp(NEURON_SPIKE_AMP_MAP);
 COLOR_AXIS_LIM = [0 300];
 N_OF_TRACES = 50;
-
-
-for NEURON_ID = NEURON_IDS(11:70)
+stimEleFound = zeros(size(NEURON_IDS));
+j = 0;
+for NEURON_ID = NEURON_IDS(1:70)
+    j = j + 1;
     recEle = NEURON_REC_ELE_MAP(NEURON_ID);
     stimEle = NEURON_ELE_MAP(NEURON_ID);
     eiSpike = getEISpikeForNeuronEle(NEURON_ID, NEURON_REC_ELE_MAP(NEURON_ID));
@@ -27,6 +28,8 @@ for NEURON_ID = NEURON_IDS(11:70)
     eleRelativePositionDict = createPositionDictForAdjEles(recEle, ELE_MAP_OBJ);
     resultStructs = {};
     i = 1;
+    k = 0;
+    eleHalfEffMovie = zeros(0, 2);
     for currentStimEle = adjacentElectrodes'
         currentStimEle
         [ fullMeasureMatrix, fullArtifactIDsMatrix, fullExcludedIDsMatrix, fullSpikesIDsMatrix, ...
@@ -35,6 +38,8 @@ for NEURON_ID = NEURON_IDS(11:70)
             thresBreach20, MINIMAL_CLUSTER, HOW_MANY_SPIKES, SPIKE_DETECTION_THRES_DICT(NEURON_ID), recEle, currentStimEle);
         result.bestMovieIdx = findBestMovie(spikesDetectedVec);
         if result.bestMovieIdx > 0
+            k = k + 1;
+            eleHalfEffMovie(k, :) = [currentStimEle result.bestMovieIdx];
             result.stableThresIdx = stableThresVec(result.bestMovieIdx);
             result.firstStepArt= fullArtifactIDsMatrix{result.bestMovieIdx}{result.stableThresIdx};
             result.firstStepSpikes = fullSpikesIDsMatrix{result.bestMovieIdx}{result.stableThresIdx};
@@ -48,16 +53,19 @@ for NEURON_ID = NEURON_IDS(11:70)
         clear result;
         i = i + 1;
     end
+    if ~isempty(eleHalfEffMovie)
+        stimEleFound(j) = findBestStimEle(eleHalfEffMovie);
+    end
 
-    path = 'C:\studia\dane_skrypty_wojtek\ks_functions\hex512\graph\';
-    f = figure();
-    set(gcf, 'InvertHardCopy', 'off');
-    set(gcf,'PaperUnits','inches','PaperPosition',[0 0 17.0667  9.6000])
-    plotHexagonally(adjacentElectrodes, resultStructs, eiSpike, eiSpikeAmp, detectionThres, stimEle)
-    axes('position',[0,0,1,1],'visible','off');
-    text(.5, 0.99, sprintf('Neuron: %d', NEURON_ID), ...
-        'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')
-    neuronStr = num2str(NEURON_ID);
-    print([path neuronStr '_range'], '-dpng', '-r150');
-    close(f)
+%     path = 'C:\studia\dane_skrypty_wojtek\ks_functions\hex512\graph\';
+%     f = figure();
+%     set(gcf, 'InvertHardCopy', 'off');
+%     set(gcf,'PaperUnits','inches','PaperPosition',[0 0 17.0667  9.6000])
+%     plotHexagonally(adjacentElectrodes, resultStructs, eiSpike, eiSpikeAmp, detectionThres, stimEle)
+%     axes('position',[0,0,1,1],'visible','off');
+%     text(.5, 0.99, sprintf('Neuron: %d', NEURON_ID), ...
+%         'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')
+%     neuronStr = num2str(NEURON_ID);
+%     print([path neuronStr '_range'], '-dpng', '-r150');
+%     close(f)
 end

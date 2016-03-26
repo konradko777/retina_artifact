@@ -1,9 +1,9 @@
 function positions = generatePositionDict2(ROWS, COLUMNS)
     %create POSITION dict
     positions = cell(ROWS * COLUMNS, 1);
-    LEFT_MARIGIN = .02;
+    LEFT_MARIGIN = .04;
     RIGHT_MARIGIN = .02;
-    BOTTOM_MARIGIN = .03;
+    BOTTOM_MARIGIN = .06;
     TOP_MARIGIN = .03;
     HORIZONTAL_SEPARATION = .015;
     VERTICAL_SEPARATION = .015;
