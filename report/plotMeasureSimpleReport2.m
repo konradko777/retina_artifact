@@ -1,4 +1,4 @@
-function plotMeasureSimpleReport(measureMatrix, currentThreshold, thresholdValues, caxisLim)
+function plotMeasureSimpleReport2(measureMatrix, currentThreshold, currentThreshold2, thresholdValues, caxisLim)
     %artifactIDsMatrix - in each cell vector of artifact IDs for given
     %clusterArtifactNo(int) - number of artifact taken from cluster file
     %caxisLim([min(int) max(int)]) - min and max value used while color mapping
@@ -8,14 +8,14 @@ function plotMeasureSimpleReport(measureMatrix, currentThreshold, thresholdValue
     %selectedThresholds(array<ints> - indices of selected thresholds
     %markselectedThresholds - whether to mark selected thersholds
     %movie
-    FONTSIZE = 30;
+    FONTSIZE = 20;
     imagesc2(measureMatrix, caxisLim);
     setTickLabels(thresholdValues, FONTSIZE - 5);
     middle = length(thresholdValues) / 2 + .5;
-    xlabel('QT used', 'fontsize', FONTSIZE, 'position', [middle .2 0])
-    ylabel('QT used', 'fontsize', FONTSIZE, 'position', [.2 middle 0])
-    colorbar('fontsize', FONTSIZE)
-%     markThresholds(currentThreshold)
+    xlabel('QT used', 'fontsize', FONTSIZE, 'position', [middle -.2 0])
+    ylabel('QT used', 'fontsize', FONTSIZE, 'position', [-.2 middle 0])
+    markThresholds(currentThreshold)
+    markThresholds2(currentThreshold2)
 
 end
 
@@ -34,6 +34,20 @@ function markMovie()
         'clipping', 'off', 'edgecolor', 'b', 'linewidth', 2);
 
 end
+
+
+function markThresholds2(selectedThresholds)
+    if isempty(selectedThresholds);
+        return
+    end
+    nThres = length(selectedThresholds);
+    XOFFSET = .5;
+    YPOS = -.3;
+    YDIM = .8;
+    FIRST = selectedThresholds(1);
+    rectangle('Position', [YPOS (FIRST - XOFFSET) YDIM (nThres)], ...
+        'clipping', 'off', 'edgecolor', 'y', 'linewidth', 1.5);
+end
     
 function markThresholds(selectedThresholds)
     if isempty(selectedThresholds);
@@ -45,9 +59,7 @@ function markThresholds(selectedThresholds)
     YDIM = .7;
     FIRST = selectedThresholds(1);
     rectangle('Position', [(FIRST - XOFFSET) YPOS (nThres) YDIM], ...
-        'clipping', 'off', 'edgecolor', 'r', 'linewidth', 1.5);
-
-
+        'clipping', 'off', 'edgecolor', 'g', 'linewidth', 1.5);
 end
 
 
@@ -77,7 +89,7 @@ end
 function setTickLabels(values, fontsize)
     labels = cellstr(num2str(values'));
     n = length(values);
-    underAxDist = .4;
+    underAxDist = .1;
     for i = 1:n
         text(underAxDist , i, labels{i},'horizontalAlignment', 'center', 'fontsize', fontsize);
         text(i,underAxDist,  labels{i},'horizontalAlignment', 'center', 'fontsize', fontsize);

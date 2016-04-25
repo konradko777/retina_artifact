@@ -5,7 +5,6 @@ ART_TO_PRUNE = 2;
 MINIMAL_CLUSTER = 3;
 SPIKE_DET_MARG = 30;
 HOW_MANY_SPIKES = 25;
-PATH_ROOT = 'C:\studia\dane_skrypty_wojtek\ks_functions\report\';
 addJava
 setGlobals
 algoHandle = @(traces, threshold) nDRWplusPruning(traces, threshold, 5, ART_TO_PRUNE, SAMPLES_LIM);
@@ -61,11 +60,9 @@ for NEURON_ID = NEURON_IDS
     f = figure();
     set(gcf, 'InvertHardCopy', 'off');
     set(gcf,'PaperUnits','inches','PaperPosition',[0 0 17.0667  9.6000])
-    plotAppTracesForNeuronSpike(NEURON_ID, detectedSpikesDict(NEURON_ID), artDict(NEURON_ID), ...
-        spikeDict(NEURON_ID), thresDict(NEURON_ID), allTraces, MOVIES, minMovie, maxMovie,...
-        movieDict(NEURON_ID), THRESHOLDS)
+    plotArtifactsForNeuron(artDict(NEURON_ID), thresDict(NEURON_ID), allTraces, MOVIES)
     axes('position',[0,0,1,1],'visible','off');
-    text(.5, 0.99, sprintf('Traces and applicability range for neuron: %d', NEURON_ID), ...
+    text(.5, 0.99, sprintf('Artifacts for neuron: %d', NEURON_ID), ...
         'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')
     neuronStr = num2str(NEURON_ID);
     print([path neuronStr '_range'], '-dpng', '-r150');

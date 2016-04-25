@@ -1,4 +1,4 @@
-function plotOneMinusTwo(one, two, oneColor, twoColor, thres, ylim_, xlim_)
+function plotOneMinusTwo2(one, two, oneColor, twoColor, thres, ylim_, xlim_)
     one_minus_two = one - two;
     zeros_ = zeros(1,length(one));
     hold on
@@ -11,6 +11,6 @@ function plotOneMinusTwo(one, two, oneColor, twoColor, thres, ylim_, xlim_)
         line(xlim, [thres thres], 'linewidth', 2, 'color', 'y')
         text(27, thres + 2, 'QT', 'fontweight', 'bold', 'fontsize', 30)
     end
-    xlabel('Samples', 'fontsize', 30)
-    set(gca, 'fontsize', 20)
+%     xlabel('Samples', 'fontsize', 30)
+%     set(gca, 'fontsize', 20)
 end

@@ -1,4 +1,6 @@
 function dict_ = createHalfFullThresAmpIdxDict(nOfSpikesDetDict)
+    %key: neuronID; 
+    %value: [algorithmHalfEfficiency, algoFullEfficiency, thresholdFileAmp]
     global NEURON_IDS NEURON_THRES_FILE_MOVIE_MAP
     ampIndices = cell(size(NEURON_IDS));
     i = 1;
