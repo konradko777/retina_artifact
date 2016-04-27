@@ -1,12 +1,10 @@
 %% getting ele dictionaries
 addJava
-setGlobals512
-% load('hex512_allRes')
-% neuronResultStructDict = rewrite100EffInAllResultsDict(neuronResultStructDict);
-[algoEleDict, thresEleDict, discrepancyNeurons] = getChosenElectrodesDicts(1)%, neuronResultStructDict);
+% setGlobals512
+% [algoEleDict, discrepancyNeurons] = getChosenElectrodesDicts(1);
 
-% setGlobals512_00
-% [algoEleDict, discrepancyNeurons] = getChosenElectrodesDicts(2);
+setGlobals512_00
+[algoEleDict, thresEleDict, discrepancyNeurons] = getChosenElectrodesDicts(2);
 % 
 % setGlobals512_03
 % [algoEleDict, discrepancyNeurons] = getChosenElectrodesDicts(3);
@@ -76,7 +74,7 @@ for NEURON_ID = discrepancyNeurons'
     eiSpikeAmp = NEURON_SPIKE_AMP_MAP(NEURON_ID);
     detectionThres = SPIKE_DETECTION_THRES_DICT(NEURON_ID);
     adjacentElectrodes = getAdjacentElectrodes(recEle, ELE_MAP_OBJ);
-    path = ['C:\studia\dane_skrypty_wojtek\ks_functions\hex512\hex_all_movies_2\' num2str(NEURON_ID) '\'];
+    path = ['C:\studia\dane_skrypty_wojtek\ks_functions\512_00\graph\all_movies\' num2str(NEURON_ID) '\'];
     mkdir(path)
     for movieIdx = 1:size(allMoviesResultStructs,1)
         resultStructs = allMoviesResultStructs(movieIdx, :);

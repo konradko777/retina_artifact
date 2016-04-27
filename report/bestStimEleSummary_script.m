@@ -18,7 +18,7 @@ for neuron = NEURON_IDS%(1:70)
     neuronBestEle(i,:) = [neuron, bestAlgoEle, thresEle];
 end
 
-% neuronBestEle
+neuronBestEle
 
 %%
 length(neuronBestEle(neuronBestEle(:,2) == neuronBestEle(:,3),:))

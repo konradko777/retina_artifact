@@ -37,6 +37,7 @@ for NEURON_ID = NEURON_IDS
         result.bestMovieIdx = findBestMovie(spikesDetectedVec);
         result.bestMovie100Idx = mapSFVecTo100PercMovieIdx(spikesDetectedVec);
         result.StimEle = currentStimEle;
+        result.spikesDetectedVec = spikesDetectedVec;
         if result.bestMovieIdx > 0
             result.stableThresIdx = stableThresVec(result.bestMovieIdx);
             result.firstStepArt= fullArtifactIDsMatrix{result.bestMovieIdx}{result.stableThresIdx};
@@ -46,7 +47,6 @@ for NEURON_ID = NEURON_IDS
             result.bestMovieTraces = getMovieElePatternTraces(MOVIES(result.bestMovieIdx), recEle, currentStimEle);
             result.subtractedTraces = subtractMeanArtFromMovieTraces(result.bestMovieTraces, result.firstStepArt);
             result.spikesDetected = spikesDetectedVec(result.bestMovieIdx);
-            result.spikesDetectedVec = spikesDetectedVec;
         end
         resultStructs{i} = result;
         clear result;
@@ -67,4 +67,4 @@ for NEURON_ID = NEURON_IDS
 %     close(f)
 end
 
-neuronResultStructDict = containers.Map(NEURON_IDS, allNeuronResultStructs);
+% neuronResultStructDict = containers.Map(NEURON_IDS, allNeuronResultStructs);

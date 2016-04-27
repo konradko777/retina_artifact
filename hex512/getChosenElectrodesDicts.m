@@ -1,4 +1,4 @@
-function [algoEleDict, discrepancyNeurons] = getChosenElectrodesDicts(datasetNo)
+function [algoEleDict, thresEleDict, discrepancyNeurons] = getChosenElectrodesDicts(datasetNo)
     addJava
     global NEURON_IDS
     if datasetNo == 1
@@ -11,6 +11,7 @@ function [algoEleDict, discrepancyNeurons] = getChosenElectrodesDicts(datasetNo)
         setGlobals512_03
         load 512_03_hex_allRes
     end
+    neuronResultStructDict = rewrite100EffInAllResultsDict(neuronResultStructDict);
     neuronBestEle = zeros(0,3);
     i = 0;
     for neuron = NEURON_IDS%(1:70)
@@ -20,6 +21,7 @@ function [algoEleDict, discrepancyNeurons] = getChosenElectrodesDicts(datasetNo)
         neuronBestEle(i,:) = [neuron, bestAlgoEle, thresEle];
     end
     algoEleDict = containers.Map(neuronBestEle(:,1), neuronBestEle(:,2));
+    thresEleDict = containers.Map(neuronBestEle(:,1), neuronBestEle(:,3));
     discrepancyIdx = neuronBestEle(:,2) ~= neuronBestEle(:,3);
     discrepancyNeurons = neuronBestEle(discrepancyIdx, 1);
 

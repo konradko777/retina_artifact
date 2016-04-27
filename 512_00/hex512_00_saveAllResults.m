@@ -17,7 +17,7 @@ N_OF_TRACES = 50;
 stimEleFound = zeros(size(NEURON_IDS));
 j = 0;
 allNeuronResultStructs = cell(size(NEURON_IDS));
-for NEURON_ID = 2316%NEURON_IDS
+for NEURON_ID = NEURON_IDS
     j
     j = j + 1;
     recEle = NEURON_REC_ELE_MAP(NEURON_ID);
@@ -37,6 +37,7 @@ for NEURON_ID = 2316%NEURON_IDS
         result.bestMovieIdx = findBestMovie(spikesDetectedVec);
         result.bestMovie100Idx = mapSFVecTo100PercMovieIdx(spikesDetectedVec);
         result.StimEle = currentStimEle;
+        result.spikesDetectedVec = spikesDetectedVec;
         if result.bestMovieIdx > 0
             result.stableThresIdx = stableThresVec(result.bestMovieIdx);
             result.firstStepArt= fullArtifactIDsMatrix{result.bestMovieIdx}{result.stableThresIdx};
@@ -46,7 +47,6 @@ for NEURON_ID = 2316%NEURON_IDS
             result.bestMovieTraces = getMovieElePatternTraces(MOVIES(result.bestMovieIdx), recEle, currentStimEle);
             result.subtractedTraces = subtractMeanArtFromMovieTraces(result.bestMovieTraces, result.firstStepArt);
             result.spikesDetected = spikesDetectedVec(result.bestMovieIdx);
-            result.spikesDetectedVec = spikesDetectedVec;
         end
         resultStructs{i} = result;
         clear result;
@@ -54,17 +54,17 @@ for NEURON_ID = 2316%NEURON_IDS
     allNeuronResultStructs{j} = resultStructs;
     end
 
-    path = 'C:\studia\dane_skrypty_wojtek\ks_functions\512_00\graph\';
-    f = figure();
-    set(gcf, 'InvertHardCopy', 'off');
-    set(gcf,'PaperUnits','inches','PaperPosition',[0 0 17.0667  9.6000])
-    plotHexagonally2(adjacentElectrodes, resultStructs, eiSpike, eiSpikeAmp, detectionThres, stimEle,164)
-%     plotHexagonally(adjacentElectrodes, resultStructs, eiSpike, eiSpikeAmp, detectionThres, stimEle)
-    axes('position',[0,0,1,1],'visible','off');
-    text(.5, 0.99, sprintf('Neuron: %d', NEURON_ID), ...
-        'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')
-    neuronStr = num2str(NEURON_ID);
-    print([path neuronStr '_range'], '-dpng', '-r150');
-%     close(f)
+%     path = 'C:\studia\dane_skrypty_wojtek\ks_functions\512_00\graph\';
+%     f = figure();
+%     set(gcf, 'InvertHardCopy', 'off');
+%     set(gcf,'PaperUnits','inches','PaperPosition',[0 0 17.0667  9.6000])
+%     plotHexagonally2(adjacentElectrodes, resultStructs, eiSpike, eiSpikeAmp, detectionThres, stimEle,164)
+% %     plotHexagonally(adjacentElectrodes, resultStructs, eiSpike, eiSpikeAmp, detectionThres, stimEle)
+%     axes('position',[0,0,1,1],'visible','off');
+%     text(.5, 0.99, sprintf('Neuron: %d', NEURON_ID), ...
+%         'horizontalAlignment', 'center', 'fontsize', 14, 'fontweight', 'bold')
+%     neuronStr = num2str(NEURON_ID);
+%     print([path neuronStr '_range'], '-dpng', '-r150');
+% %     close(f)
 end
 % neuronResultStructDict = containers.Map(NEURON_IDS, allNeuronResultStructs);
