@@ -69,4 +69,4 @@ for NEURON_ID = NEURON_IDS
 %     close(f)
 end
 
-neuronResultStructDict = containers.Map(NEURON_IDS, allNeuronResultStructs)
+neuronResultStructDict = containers.Map(NEURON_IDS, allNeuronResultStructs);

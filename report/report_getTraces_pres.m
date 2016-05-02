@@ -213,7 +213,7 @@ meanArt = mean(traces(artIDs, :));
 notArts = 1:50;
 notArts = setdiff(notArts, artIDs);
 % notArts = setdiff(notArts, excludedIDs);
-artIDs = setdiff(artIDs, excluded);
+% artIDs = setdiff(artIDs, excluded);
 plotSelectedTraces2(traces, artIDs, 'r', 1.5)
 % plotSelectedTraces2(traces, excludedIDs, 'b', 1.5)
 plotSelectedTraces(traces, notArts, gray)
@@ -272,9 +272,18 @@ recEle = NEURON_REC_ELE_MAP(NEURON_ID);
 pattern = NEURON_ELE_MAP(NEURON_ID);
 traces = getMovieElePatternTraces(movie, recEle, pattern);
 traces = traces(:,SAMPLE_LIM(1) : SAMPLE_LIM(2));
+
+%% plottin traces 
+plot(traces', 'color', gray, 'linewidth', 2)
+set(gca, 'fontsize', 20)
+set(gca, 'xtick', 0:10:70)
+set(gca, 'xticklabel', get(gca, 'xtick') *50 / 1000)
+xlabel('t[ms]', 'fontsize', 30)
+
+%% plot mean arts
+
 thresToConsider = [3, 4, 12, 17];
 meanArts = zeros(length(thresToConsider), SAMPLE_LIM(2));
-
 for i = 1:length(thresToConsider)
     thresID = thresToConsider(i);
     artIDs = artDict(NEURON_ID);
@@ -313,7 +322,20 @@ for i = 1:length(thresToConsider)
     artIDs = artIDs{movie}{thresID};
     plot(traces(artIDs, :)','r', 'linewidth', 1)
     plot(meanArts(i,:), 'g--', 'linewidth', 3)
-%     set(gca, 'fontsize', 20)
+    set(gca, 'fontsize', 20)
+    if i < 3
+        set(gca, 'xticklabel', '')
+    else
+        set(gca, 'xtick', 0:10:70)
+        set(gca, 'xticklabel', get(gca, 'xtick') *50 / 1000)
+        xlabel('t[ms]', 'fontsize', 20)
+        xlabh = get(gca,'XLabel');
+        set(xlabh,'Position', [25 -430 0])
+    end
+    if ~mod(i, 2)
+        set(gca, 'yticklabel', '')
+    end
+    set(gca, 'fontsize', 20)
 end
 
 %% plot 1 classification
@@ -397,6 +419,8 @@ plot(twenty, 'color', transRGB(0, 0, 0), 'linewidth', 4)
 plot(twentyfive, 'color', transRGB(255, 76, 59), 'linewidth', 4)
 plot(sixty, 'color', transRGB(0, 134, 217), 'linewidth', 4)
 plot(ninety, 'color', transRGB(255, 228, 72), 'linewidth', 4)
+set(gca, 'xtick', 0:10:50)
+set(gca, 'xticklabel', get(gca, 'xtick') *50 / 1000)
 ylim([-370, -120])
 xlim([1, 30])
 set(gca, 'fontsize', 20)
