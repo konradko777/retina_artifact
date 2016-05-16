@@ -1,0 +1,6 @@
+﻿Bodziec do danej komórki podawany jest 50 razy z wykorzystaniem wybranej elektrody i prądu stymulacyjnego. 
+W pliku matlabowskim dataWithClass.mat zapisane są 2 macierze:
+- allTraces - przebiegi napiecia na elektrodzie w wymiarach amplituda/neuron (25)  x ilość powtórzeń (50) x długość rejestracji (140)
+- classification - macierz binarna w formacie amplituda/neuron (25) * ilość powtórzeń (50), gdzie 1 oznacza, ze przebieg zostal zaklasyfikowany jako artefakt stymulacyjny
+
+Wymiary obu macierzy są zgodne, co oznacza, że aby sprawdzić czy piąty przebieg dla drugiej pary amplituda/neuron, którego kształt opisują liczby allTraces(2, 5, :), należy wykonać test classification(2, 5) == 1.
