@@ -1,4 +1,4 @@
-classdef (Abstract) abstractArtClassifier
+classdef (Abstract) abstractArtClassifier < handle
     methods (Abstract)
         classifyArtifacts(traces)
     end

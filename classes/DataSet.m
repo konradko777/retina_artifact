@@ -1,11 +1,14 @@
 classdef DataSet < handle
     properties
+        tracesNumberLimit = 50;
+        eventNumber = 0;
+        electrodeLayoutObj = edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(500);
+        
         dataPath
         EIFile
         neuronIdx
         artClassifierObj
         spikeDetectorObj
-        electrodeLayoutObj
         neuronIdxEIElectrodeMap
         neuronIdxEISpikeAmpMap
         
@@ -18,13 +21,14 @@ classdef DataSet < handle
             dataSetObj.neuronIdx = neuronIdx;
             dataSetObj.EIFile = ...
                 edu.ucsc.neurobiology.vision.io.PhysiologicalImagingFile(EIFilePath);
-            dataSetObj.electrodeLayoutObj = edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(500);
             dataSetObj.createEIMappings
         end
         
         function createEIMappings(dataSetObj)
             [EIElectrodes, EISpikeAmps] = findBestEleAndSpikeAmpFromEIForNeurons(dataSetObj.neuronIdx);
-            EIElectrodes
+            dataSetObj.neuronIdxEIElectrodeMap = containers.Map(dataSetObj.neuronIdx, EIElectrodes);
+            dataSetObj.neuronIdxEISpikeAmpMap = containers.Map(dataSetObj.neuronIdx, EISpikeAmps);
+            
             function [electrodes, spikeAmps]= findBestEleAndSpikeAmpFromEIForNeurons(neurons)
                 %returns the the spikeAmplitude(the most negative sample in ei) and
                 %   electrode associated with it
@@ -33,22 +37,16 @@ classdef DataSet < handle
                 i = 1;
                 for neuron = neurons
                     ei = getEIForNeuron(dataSetObj, neuron);
-                    electrodes(i) = findBestEleFromEI(dataSetObj, neuron, ei);
+                    electrodes(i) = findBestEleFromEI(ei);
                     spikeAmps(i) = findSpikeAmpFromEI(electrodes(i), ei); %dopisac
                     i = i + 1;
                 end
             end
             
-            function electrode = findBestEleFromEI(dataSetObj, neuron, EI)
+            function electrode = findBestEleFromEI(EI)
                 % EI format (nElectrodes x nSamples)
-                global NEURON_ELE_MAP
-                stimEle = NEURON_ELE_MAP(neuron);
-                adjacentEles = dataSetObj.electrodeLayoutObj.getAdjacentsTo(stimEle,1);
-                [~, electrodePositionIdx] = min(min(EI(adjacentEles + 1, :),[], 2)); %+1 to match the EI format(0th channel)
-                electrode = adjacentEles(electrodePositionIdx);
-                %2ga wersja
-%                 [~, electrodePositionIdx] = min(min(EI,[], 2));
-%                 electrode = electrodePositionIdx - 1;
+                [~, electrodePositionIdx] = min(min(EI,[], 2));
+                electrode = electrodePositionIdx - 1; %EI has additional 0th channel, thus we need to subtract 1 to match proper electrode
             end
             
             function amp = findSpikeAmpFromEI(electrode, ei)
@@ -65,6 +63,12 @@ classdef DataSet < handle
             
         end
         
+        function traces = getTracesForPatternMovieEle(dataSetObj, pattern, movie, ele)
+            [allEleTraces,~,~] = NS_ReadPreprocessedData( ...
+                dataSetObj.dataPath, dataSetObj.dataPath,0, pattern, movie, ...
+                dataSetObj.tracesNumberLimit, dataSetObj.eventNumber);
+            traces = squeeze(allEleTraces(:, ele, :));
+        end
 
     end
 end
