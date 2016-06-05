@@ -1,0 +1,3 @@
+Exception in thread "main" java.lang.NullPointerException
+	at edu.ucsc.neurobiology.vision.Vision.initGUI(Vision.java:900)
+	at edu.ucsc.neurobiology.vision.Vision.main(Vision.java:1256)

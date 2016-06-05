@@ -1,5 +1,5 @@
 classdef (Abstract) SpikeDetThresholdServer < handle
     methods (Abstract)
-        giveThresholdForElectrodes(stimEle, recEle)
+        giveThresholdForElectrodesMovie(stimEle, recEle)
     end
 end

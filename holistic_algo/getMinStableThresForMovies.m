@@ -6,5 +6,4 @@ function stableThresholdsMat = getMinStableThresForMovies(fullMeasureMat, movies
         stableThresForMovie = getMinimalStableThresholds(measureMat, thresholds, breachFunction, minimalCluster);
         stableThresholdsMat{i} = stableThresForMovie;
     end
-
 end

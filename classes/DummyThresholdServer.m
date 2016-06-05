@@ -7,7 +7,7 @@ classdef DummyThresholdServer < SpikeDetThresholdServer
         function serverObj = DummyThresholdServer(dummyAmp)
             serverObj.dummyAmp = dummyAmp;
         end
-        function threshold = giveThresholdForElectrodes(serverObj, stimEle, recEle)
+        function threshold = giveThresholdForElectrodesMovie(serverObj, stimEle, recEle, movie)
             threshold = serverObj.dummyAmp;            
         end
     end

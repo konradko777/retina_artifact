@@ -1,5 +1,5 @@
 classdef (Abstract) abstractArtClassifier < handle
     methods (Abstract)
-        classifyArtifacts(traces)
+        classifyArtifacts(obj, traces)
     end
 end

@@ -31,7 +31,6 @@ function [artifactIDsMatrix, excludedIDsMatrix, spikesIDsMatrix] = computeIDsMat
         excludedIDsMatrix{i} = resultStruct.excluded;
         spikesIDsMatrix{i} = resultStruct.spikes;
     end
-    
 end
 
 
