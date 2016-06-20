@@ -1,15 +1,13 @@
-for neuron = keys(NEURON_ELE_MAP)
-    fprintf('%d : %d\n', neuron{1}, NEURON_ELE_MAP(neuron{1}))    
-end
+clear serv
+serv = ManualThresholdServer([1 2 44; 3 4 8888], [1 2 3]);
 
 
-% clear
-% ds = DataSet('adfadsf', [5, 10])
-% clear
-% l = List();
-% l.add(5)
-% l.add('2352')
-% l.getEl(2)
-% l.removeEl(2)
-% l.popEl(1)
-% l
+% function test()
+%     a = [1 1 1; 2 2 2];
+%     [b, c, d] = mat2cell(a, 2, [1 1 1])
+%     cellfun(@myDisp, b, c, d)
+% end
+% 
+% function myDisp(a, b, c)
+%     sprintf('%d %d %d', a, b, c)
+% end

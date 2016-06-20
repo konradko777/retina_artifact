@@ -10,7 +10,7 @@ load('neuronEleMap_00')
 
 %%
 clear('ds')
-ds = DataSet(DATA_PATH, 'largestQT');
+ds = DataSet(DATA_PATH, 'largestQT', 1:2:63, [10 48]);
 
 %%
 qtServer = QTThresholdServer();
@@ -23,13 +23,30 @@ traces = ds.getTracesForPatternMovieEle(ele, 21, ele);
 plot(traces')
 
 %%
-% clear QTClassifier
+clear QTClassifier
 QTClassifier =  QTArtClassifier();
 % [artIds, highestQT] = QTClassifier.classifyArtifacts(traces);
 
 %%
+clear spikeDetector
+spikeDetector = SimpleSpikeDetector([8 37]);
+% [a, b] = spikeDetector.detectSpike(spikeTrace, meanArt, -200)
+% spikeMat = spikeDetector.detectSpikesForMovie(traces, meanArt, -100, 21)
+
+%%
+clear interpreter
+interpreter = resultInterpreter([10, 48]);
+%%
+FULL_EFF_APPROX = .92;
+clear ampSelectorObj
+ampSelectorObj = StimAmpSelector(FULL_EFF_APPROX);
+
+%%
 ds.attachArtClassifierObj(QTClassifier)
 ds.attachThresServerObj(qtServer)
+ds.attachSpikeDetectorObj(spikeDetector)
+ds.attachInerpreterObj(interpreter)
+ds.attachStimAmpSelectorObj(ampSelectorObj);
 % artIDs = ds.getArtIDsAndLargestQT(ele, 21, ele);
 %%
 meanArt = ds.getMeanArtForMovie(ele, 21, ele);
@@ -44,7 +61,22 @@ meanArt = meanArts(movieIdx, :);
 spikeTrace = traces(2,:);
 
 %%
-clear spikeDetector
-spikeDetector = SimpleSpikeDetector([8 37]);
-% [a, b] = spikeDetector.detectSpike(spikeTrace, meanArt, -200)
-spikeMat = spikeDetector.detectSpikesForMovie(traces, meanArt, -100, 21)
+movies =  1:2:63;
+allTraces = ds.getAllTracesForPatternEle(ele, ele, movies);
+meanArts = ds.getMeanArtsForMovies(allTraces, ele, ele, movies);    
+spikesMat = ds.detectSpikesForAllMovies(allTraces, meanArts, ele, ele, movies);
+spikeVec = ds.transformSpikeMatToVec(spikesMat, movies);
+interpretationVec = ds.interpretResults(spikeVec);
+
+%%
+[interpretationVector, artifactEstimates, spikeMatrix] = ds.analyzeSEREpair(ele, ele);
+optimalStimAmp = ds.selectOptimalStimAmp(spikeMatrix, interpretationVector);
+%%
+[electrodes, amps] = ds.estimateBestStimAmpsForClosestEles(ele, ele);
+
+%% fitting debug
+problematicEle = 197;
+[interpretationVector, artifactEstimates, spikeMatrix] = ds.analyzeSEREpair(problematicEle, ele);
+
+%% best ele
+bestEle = ds.chooseBestStimulationElectrode(ele);

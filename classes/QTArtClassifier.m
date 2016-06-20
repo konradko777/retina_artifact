@@ -1,4 +1,4 @@
-classdef QTArtClassifier  < handle %< abstractArtClassifier
+classdef QTArtClassifier < handle
     properties
         ART_TO_PRUNE = 2;
         SAMPLES_LIM = [8 37];
