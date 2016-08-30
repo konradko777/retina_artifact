@@ -19,12 +19,13 @@ classdef DataSet < handle
         thresholdServerObj
         interpreterObj
         stimAmpSelectorObj
+        elecRespStruct
     end
     
     methods
         %% DataSet constructor
-        function dataSetObj = DataSet(dataPath, visionPath, tracesNumberLimit, ...
-                nElectrodes, samplingRate, spikeDetectionMethod, movies, applicationRange)
+        function dataSetObj = DataSet(dataPath, visionPath, elecRespStruct, ...
+                nElectrodes, spikeDetectionMethod, applicationRange)
         % A DataSet object constructor.
         % Input:
         %     dataPath(String): a path to location where files with sliced
@@ -47,13 +48,14 @@ classdef DataSet < handle
             javaaddpath(visionPath);
             dataSetObj.dataPath = dataPath;
             dataSetObj.spikeDetectionMethod = spikeDetectionMethod;
-            dataSetObj.movies = movies;
-            dataSetObj.currentAmps = dataSetObj.extractStimulationAmplitudes();
+            dataSetObj.elecRespStruct = elecRespStruct;
+            dataSetObj.movies = elecRespStruct.stimInfo.movieNos;
+            dataSetObj.currentAmps = elecRespStruct.stimInfo.stimAmps;
             dataSetObj.applicationRange = applicationRange;
-            dataSetObj.tracesNumberLimit = tracesNumberLimit;
+%             dataSetObj.tracesNumberLimit = tracesNumberLimit;
             dataSetObj.electrodeLayoutObj = ...
                 edu.ucsc.neurobiology.vision.electrodemap.ElectrodeMapFactory.getElectrodeMap(nElectrodes);
-            dataSetObj.samplingRate = samplingRate;
+            dataSetObj.samplingRate = dataSetObj.elecRespStruct.details.sample_rate;
         end 
         %% attaching other objects to DataSet object
         function attachThresServerObj(dataSetObj, thresServObj)
@@ -111,9 +113,11 @@ classdef DataSet < handle
         %     traces(Array<Float>): each row of that matrix is representing
         %         registered voltage after electric stimulus. The number of
         %         rows is equal to dataSetObj.tracesNumberLimit.
+            movieID = find(dataSetObj.elecRespStruct.stimInfo.artMovieNos == movie);
+            tracesNumberLimit = dataSetObj.elecRespStruct.stimInfo.nPulses(movieID);
             [allEleTraces,~,~] = NS_ReadPreprocessedData( ...
                 dataSetObj.dataPath, dataSetObj.dataPath,0, pattern, movie, ...
-                dataSetObj.tracesNumberLimit, dataSetObj.eventNumber);
+                tracesNumberLimit, dataSetObj.eventNumber);
             traces = squeeze(allEleTraces(:, ele, :));
         end
         function allTracesCell = getAllTracesForSEREpair(dataSetObj, stimEle, ele, movies)
@@ -138,13 +142,7 @@ classdef DataSet < handle
             end
         end
         %% estimating stimulation artifacts
-%         function artIDs = getArtIDsAndLargestQT(dataSetObj, pattern, movie, ele)
-%             traces = getTracesForPatternMovieEle(dataSetObj, pattern, movie, ele);
-%             [artIDs, largestQT] = dataSetObj.artClassifierObject.getArtIDsAndLargestQT(traces);
-%             if dataSetObj.spikeDetectionMethod == 'largestQT'
-%                 dataSetObj.thresholdServerObj.saveThresForElectrodesMovie(pattern, ele, movie, largestQT);
-%             end
-%         end% ta funkcja niepotrzebna?
+
         function meanArt = getMeanArtForMovie(dataSetObj, traces, pattern, movie, ele)
         % Returns stimulation artifact estimate for given
         % pattern(stimulation electrode ID), amplitude ID (movie) and
