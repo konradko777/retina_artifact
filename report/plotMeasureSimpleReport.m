@@ -12,8 +12,8 @@ function plotMeasureSimpleReport(measureMatrix, currentThreshold, thresholdValue
     imagesc2(measureMatrix, caxisLim);
     setTickLabels(thresholdValues, FONTSIZE - 5);
     middle = length(thresholdValues) / 2 + .5;
-    xlabel('QT used', 'fontsize', FONTSIZE, 'position', [middle .2 0])
-    ylabel('QT used', 'fontsize', FONTSIZE, 'position', [.2 middle 0])
+    xlabel('QT used', 'fontsize', FONTSIZE, 'position', [middle .1 0])
+    ylabel('QT used', 'fontsize', FONTSIZE, 'position', [.1 middle 0])
     colorbar('fontsize', FONTSIZE)
 %     markThresholds(currentThreshold)
 
@@ -77,7 +77,7 @@ end
 function setTickLabels(values, fontsize)
     labels = cellstr(num2str(values'));
     n = length(values);
-    underAxDist = .4;
+    underAxDist = .3;
     for i = 1:n
         text(underAxDist , i, labels{i},'horizontalAlignment', 'center', 'fontsize', fontsize);
         text(i,underAxDist,  labels{i},'horizontalAlignment', 'center', 'fontsize', fontsize);

@@ -8,8 +8,8 @@ function plotOneMinusTwo2(one, two, oneColor, twoColor, thres, ylim_, xlim_)
     xlim(xlim_)
     ylim(ylim_)
     if thres
-        line(xlim, [thres thres], 'linewidth', 2, 'color', 'y')
-        text(27, thres + 2, 'QT', 'fontweight', 'bold', 'fontsize', 30)
+        line(xlim, [thres thres], 'linewidth', 2, 'color', 'k')
+        text(45, thres + 8, 'QT', 'fontweight', 'bold', 'fontsize', 30)
     end
 %     xlabel('Samples', 'fontsize', 30)
 %     set(gca, 'fontsize', 20)

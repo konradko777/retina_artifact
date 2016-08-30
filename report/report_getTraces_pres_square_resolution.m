@@ -81,33 +81,32 @@ legends = {{repmat(['Passed'], 6, 1)}, ...
     {'Failed', 'Failed', 'Passed', 'Passed', 'Passed', 'Passed'}};
 posDict = generatePositionDict3(3, 2, .015, .08);
 for i = 1:6
-    subplot('Position', posDict{i})
+%     subplot('Position', posDict{i})
+    if ~any(i == [1, 3])
+        continue
+    end
+    figure
     hold on
     currentTrace = allTraces(i,:); 
     subtractedTraces = allTraces - repmat(currentTrace, 6, 1);
     for j = 1:6
-        plot(subtractedTraces(j,:), colors(j), 'linewidth', 2)
-        set(gca, 'xlim', [0 90])
+        plot(subtractedTraces(j,:), colors(j), 'linewidth', 3)
+        set(gca, 'xlim', [0 50])
     end
     legend(legends{i}, 'Fontsize', 20);
-    drawDoubleQT(25, 'k')
-    if i ~= 5
-        set(gca, 'xticklabel', '')
-        set(gca, 'yticklabel', '')
-    else
-        set(gca, 'xtick', 0:10:50)
-        set(gca, 'xticklabel', get(gca, 'xtick') *50 / 1000)
-        set(gca, 'fontsize', 13)
-        xlabel('t[ms]', 'fontsize', 14)
-        xlabh = get(gca,'XLabel');
-        set(xlabh,'Position', [25 -155 0])
-    end
+    drawDoubleQT(25, 'k', 7)
+    set(gca, 'xtick', 0:10:50)
+    set(gca, 'xticklabel', get(gca, 'xtick') *50 / 1000)
+    set(gca, 'fontsize', 20)
+    xlabel('t[ms]', 'fontsize', 20)
+    xlabh = get(gca,'XLabel');
+    set(xlabh,'Position', [25 -145 0])
     ylim([-130, 130])
-    title(sprintf('%s. Trace %d subtracted', titles{i}, i), 'fontsize', 18)
+    title(sprintf('%s. Trace %d subtracted', titles{i}, i), 'fontsize', 20)
 end
 path = 'C:\studia\dane_skrypty_wojtek\ks_functions\report\graph_to_rep';
 set(gcf, 'PaperUnits', 'centimeters', 'PaperPosition', [0 0 20 25])
-print(gcf, '-dpng', 'test.png')
+% print(gcf, '-dpng', 'test.png')
 
 %% plotting one minus two subtractions (art - spike)
 qt = 20;
@@ -140,8 +139,8 @@ text(45, -qt - 8, 'QT', 'fontweight', 'bold', 'fontsize', 30)
 
 %% plotting one minus two subtractions (spike - art)
 qt = 20;
-posDict = generatePositionDict3(1,2, .09, .08);
-offset = [0 .01 0 0];
+posDict = generatePositionDict3(1, 2, .09, .08);
+offset = [.01 .01 0 0];
 subplot('Position', posDict{1} + offset)
 hold on
 grid on
@@ -155,7 +154,7 @@ set(gca,  'fontsize', 20)
 xlabel('t[ms]', 'fontsize', 20)
 xlabh = get(gca,'XLabel');
 set(xlabh,'Position', [25 -487 0])
-subplot('Position', posDict{2} + offset)
+subplot('Position', posDict{2} + offset - [0)
 plotOneMinusTwo2(three, one, 'g', 'b', qt, [-130 130], [0, 50])
 line(xlim, [-qt -qt], 'linewidth', 2, 'color', 'k')
 text(45, -qt - 8, 'QT', 'fontweight', 'bold', 'fontsize', 30)
@@ -446,11 +445,13 @@ posDict = generatePositionDict3(6, 2, .05 , .03);
 thresToConsider = [1, 4, 5, 7, 9, 15];
 tracesSubtracted = traces - repmat(traces(chosenTraceID, :), 50, 1);
 posDictCorrection = [.02 0 -0.04 0];
-posDictCorrection2 = [0 .02 0 0]
+posDictCorrection2 = [0 .02 0 0];
+doublePosDict = generatePositionDict3(2, 1, .04, .04);
 for i=1:6
-    subplot('Position', posDict{2*i - 1} + posDictCorrection + posDictCorrection2)
+    figure
+    subplot('Position', doublePosDict{1})
     hold on
-    title(sprintf('                                                                      Quantization Threshold: %d', THRESHOLDS(thresToConsider(i))), ...
+    title(sprintf('Quantization Threshold: %d', THRESHOLDS(thresToConsider(i))), ...
         'Fontsize', 18)
     plot(traces(chosenTraceID, :), 'g', 'linewidth', 2)
     plot(traces(chosenTraceID, :), 'r', 'linewidth', 2)
@@ -461,52 +462,44 @@ for i=1:6
     else
         plot(traces(chosenTraceID, :), 'g', 'linewidth', 2)
     end
-    if i ~= 6
-        set(gca, 'xticklabel', '')
-        set(gca, 'yticklabel', '')
-    else
-        set(gca, 'xtick', 0:10:50)
-        set(gca, 'xticklabel', get(gca, 'xtick') *50 / 1000)
-        set(gca, 'fontsize', 16)
-        xlabel('t[ms]', 'fontsize', 18)
-        xlabh = get(gca,'XLabel');
-        set(xlabh,'Position', [25 -535 0])
-        lh = legend('Declared not artifact', 'Declared artifact');
-        set(lh, 'fontsize', 12)
-        set(lh, 'location', 'southeast')
-    end
+    set(gca, 'xtick', 0:10:50)
+%     set(gca, 'xticklabel', get(gca, 'xtick') *50 / 1000)
+%     set(gca, 'fontsize', 16)
+%     xlabel('t[ms]', 'fontsize', 18)
+%     xlabh = get(gca,'XLabel');
+%     set(xlabh,'Position', [25 -535 0])
+    set(gca, 'xticklabel', '')
+    set(gca, 'fontsize', 17) 
+    lh = legend('Declared not artifact', 'Declared artifact');
+    set(lh, 'fontsize', 20)
+    set(lh, 'location', 'southeast')
     anchor = -360;
     line([15 15], [anchor anchor - THRESHOLDS(thresToConsider(i))], 'color', 'y', ...
         'linewidth', 3)
     xlim([0, 50])
-    for i = 1:6
-        subplot('Position', posDict{2*i} + posDictCorrection2)
-        plot(tracesSubtracted', 'color', gray)
-        drawDoubleQT(THRESHOLDS(thresToConsider(i)), 'y', 17);
-        xlim([0, 50])
-        ylim([-130, 150])
-        if i ~= 6
-            set(gca, 'xticklabel', '')
-            set(gca, 'yticklabel', '')
-        else
-            set(gca, 'xtick', 0:10:50)
-            set(gca, 'xticklabel', get(gca, 'xtick') *50 / 1000)
-            set(gca, 'fontsize', 16)
-            xlabel('t[ms]', 'fontsize', 18)
-            xlabh = get(gca,'XLabel');
-            set(xlabh,'Position', [25 -165 0])
-        end
-    end
+    subplot('Position', doublePosDict{2})
+    plot(tracesSubtracted', 'color', gray)
+    drawDoubleQT(THRESHOLDS(thresToConsider(i)), 'y', 11);
+    xlim([0, 50])
+    ylim([-140, 150])
+    set(gca, 'xticklabel', '')
+    set(gca, 'xtick', 0:10:50)
+    set(gca, 'xticklabel', get(gca, 'xtick') *50 / 1000)
+    set(gca, 'fontsize', 17)
+    xlabel('t[ms]', 'fontsize', 20)
+    xlabh = get(gca,'XLabel');
+    set(xlabh,'Position', [25 -145 0])
 end
 
 path = 'C:\studia\dane_skrypty_wojtek\ks_functions\report\graph_to_rep';
 set(gcf, 'PaperUnits', 'centimeters', 'PaperPosition', [0 0 25 32])
-print(gcf, '-dpng', 'one_trace_classs.png')
+% print(gcf, '-dpng', 'one_trace_classs.png')
 %% six different classifications
 
 meanArts = zeros(length(thresToConsider), SAMPLE_LIM(2));
-posDict = generatePositionDict3(3, 2, .035, .04);
-posDictCorrection = [.03 0 0 0];
+posDict = generatePositionDict3(2, 3, .035, .04);
+posDictCorrection = [.01 0 0 0];
+posDictCorrection2 = [0 .02 0 0];
 for i = 1:length(thresToConsider)
     thresID = thresToConsider(i);
     artIDs = artDict(NEURON_ID);
@@ -515,10 +508,10 @@ for i = 1:length(thresToConsider)
 end
 
 for i = 1:length(thresToConsider)
-    if mod(i, 2)
-        subplot('Position', posDict{i} + posDictCorrection)
+    if i < 4
+        subplot('Position', posDict{i} + posDictCorrection + posDictCorrection2)
     else
-        subplot('Position', posDict{i})
+        subplot('Position', posDict{i} + posDictCorrection)
     end
     hold on
     thresStr = num2str(THRESHOLDS(thresToConsider(i)));
@@ -530,7 +523,8 @@ for i = 1:length(thresToConsider)
     plot(traces(artIDs, :)','r', 'linewidth', 1)
     plot(meanArts(i,:), 'g--', 'linewidth', 3)
     set(gca, 'fontsize', 20)
-    if i ~= 5
+    xlim([0, 50])
+    if i ~= 4
         set(gca, 'xticklabel', '')
         set(gca, 'yticklabel', '')
     else
@@ -539,7 +533,7 @@ for i = 1:length(thresToConsider)
         set(gca, 'fontsize', 16)
         xlabel('t[ms]', 'fontsize', 18)
         xlabh = get(gca,'XLabel');
-        set(xlabh,'Position', [25 -525 0])
+        set(xlabh,'Position', [25 -520 0])
     end
     set(gca, 'fontsize', 20)
 end
@@ -647,6 +641,7 @@ set(gcf,'PaperUnits','inches','PaperPosition',[0 0 17.0667  9.6000])
 measureHandle = @cmpDiffMeasureVec;
 measureMatrix = computeMeasureMat(meanArts, measureHandle);
 plotMeasureSimpleReport(measureMatrix, -10, THRESHOLDS(thresToConsider), [0, 300])
+print(gcf, '-dpng', 'C:/studia/dane_skrypty_wojtek/prezentacja_lipiec/graph/diffrence_matrix_traces.png')
 % saveas(1, 'small_measure_mat_rep_poprawione.png')
 %% difference measure + traces
 

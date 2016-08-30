@@ -6,7 +6,7 @@ function Amplitude=NS_AmplitudesForPattern_512_1el(DataPath,Channels,PatternNumb
 %The function gives back the amplitude value of stimulation current for
 %each electrode.
 %DataPath - with preprocessed data
-
+filesep = '/';
 FullName_status=[DataPath filesep 'status_m' num2str(MovieNumber)];
 load(FullName_status);
 for i=1:512

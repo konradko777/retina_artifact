@@ -16,7 +16,7 @@ classdef ManualThresholdServer < SpikeDetThresholdServer
         %         following information:
         %         1st. stimulation electrode ID
         %         2nd. recording electrode ID
-        %         3rd. amplitude integer representation
+        %         3rd. amplitude index (movie)
         %         4th. spike detection threshold
         %         If detection threshold is the same for every amplitude
         %         regarding SE-RE pair, third column may be ommited, and
@@ -117,7 +117,7 @@ classdef ManualThresholdServer < SpikeDetThresholdServer
         %     movie(Int): amplitude integer representation
         % Output:
         %     threshold(Float): spike detection threshold.
-            threshold = serverObj.thresDict(serverObj.makeCharKey(stimEle, recEle, movie);           
+            threshold = serverObj.thresDict(serverObj.makeCharKey(stimEle, recEle, movie));           
         end
     end
 end

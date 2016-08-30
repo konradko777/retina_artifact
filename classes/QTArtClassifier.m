@@ -10,6 +10,15 @@ classdef QTArtClassifier < handle
     
     methods
         %% stability island functions
+        function QTClassObj = QTArtClassifier(samplesLim, artToPrune, ...
+                votesToExclude, thresholds, minimalCluster, stabilityThreshold)
+            QTClassObj.SAMPLES_LIM = samplesLim;
+            QTClassObj.ART_TO_PRUNE = artToPrune;
+            QTClassObj.VOTES_TO_EXCLUDE = votesToExclude;
+            QTClassObj.THRESHOLDS = thresholds;
+            QTClassObj.MINIMAL_CLUSTER = minimalCluster;
+            QTClassObj.STABILITY_THRESHOLD = stabilityThreshold;
+        end
         function stableThresholdsIdx = getMinimalStableThresholds(QTClassObj, measureMatrix,...
                 thresholds, similaritydBreachFunc, minimalCluster)
         % Method returns quantization threshold indices that belong 
@@ -183,8 +192,14 @@ classdef QTArtClassifier < handle
             stabilityIslandThresholds = QTClassObj.getMinimalStableThresholds(measureMatrix, QTClassObj.THRESHOLDS, breachFuncHandle, QTClassObj.MINIMAL_CLUSTER);
             chosenThresholdIdx = QTClassObj.getThresIdxFromIsland(stabilityIslandThresholds);
             highestThresholdIdx = QTClassObj.getLastIdxFromIsland(stabilityIslandThresholds);
-            largestQT = QTClassObj.THRESHOLDS(highestThresholdIdx);
-            artifactIDs = artifactIDsMatrix{chosenThresholdIdx};
+            if highestThresholdIdx == 0 % no stability island found
+                largestQT = 0;
+                artifactIDs = [];
+            else
+                largestQT = QTClassObj.THRESHOLDS(highestThresholdIdx);
+                artifactIDs = artifactIDsMatrix{chosenThresholdIdx};
+            end
+            
         end
 %         function QT = getHighestQT(QTClassObj, traces)
 %             nThresholds = length(QTClassObj.THRESHOLDS);
@@ -356,12 +371,12 @@ classdef QTArtClassifier < handle
             tracesIDs = 1:nWaveforms;
             for iWave = tracesIDs
                 tmpArtifact = Waveforms(iWave,:);
-                numberOfDRW(iWave) = nDRWFunction(Waveforms, tmpArtifact, QuantTh, samplesLim);
+                numberOfDRW(iWave) = QTClassObj.nDRWFunction(Waveforms, tmpArtifact, QuantTh, samplesLim);
             end
             artifacts = tracesIDs(numberOfDRW < nDRW);
             spikes = setdiff(1:nWaveforms, artifacts);
             if length(artifacts) > artToPrune
-                excluded = pruneExtremeArtifacts(Waveforms, artifacts, artToPrune, samplesLim);
+                excluded = QTClassObj.pruneExtremeArtifacts(Waveforms, artifacts, artToPrune, samplesLim);
                 artifacts = setdiff(artifacts, excluded);
             elseif isempty(artifacts)
                 excluded = [];
@@ -375,7 +390,7 @@ classdef QTArtClassifier < handle
             resultStruct.spikes = spikes;
         end
         
-        function [ NumberOfDRW ] = nDRWFunction(Waveforms, artifactCandidate,...
+        function [ NumberOfDRW ] = nDRWFunction(QTClassObj,Waveforms, artifactCandidate,...
                 QuantTh, samplesLim)
         % A method that tells how many traces lays above artifactCandidate.
         % Input:
@@ -418,6 +433,15 @@ classdef QTArtClassifier < handle
                 end
             end
             NumberOfDRW = nDRW;
+        end
+        
+        function prunedIDs = pruneExtremeArtifacts(QTClassObj, waveforms, artifactIDs, nToExclude, samplesLim)
+            cutArtWaveforms = waveforms(artifactIDs, samplesLim(1):samplesLim(2));
+            avgArtifact = mean(cutArtWaveforms);
+            errors = cutArtWaveforms - repmat(avgArtifact, size(cutArtWaveforms, 1), 1);
+            [~, indices] = sort(sum(abs(errors), 2), 'descend');
+            sortedArtIDs = artifactIDs(indices);
+            prunedIDs = sortedArtIDs(1:nToExclude);
         end
 
 

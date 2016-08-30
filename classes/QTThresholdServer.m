@@ -18,7 +18,7 @@ classdef QTThresholdServer < SpikeDetThresholdServer
             serverObj.thresDict = containers.Map('KeyType', 'char', 'ValueType', 'single');
             serverObj.scalingOfQT = scalingOfQT;
         end
-        function saveThresForElectrodesMovie(servObj, stimEle, recEle, movie, QT)
+        function saveThresForElectrodesMovie(serverObj, stimEle, recEle, movie, QT)
         % Puts information about spike detection threshold for 
         % SE-RE-amplitude combination using known largest quantization
         % threshold into servObj.thresDict map object.
@@ -28,7 +28,7 @@ classdef QTThresholdServer < SpikeDetThresholdServer
         %     movie(Int): amplitude integer representation
         %     QT(Float): largest quantization threshold in stability island
             charKey = sprintf('%d %d %d', stimEle, recEle, movie);
-            servObj.thresDict(charKey) = -QT * serverObj.scalingOfQT;           
+            serverObj.thresDict(charKey) = -QT * serverObj.scalingOfQT;           
         end
         function threshold = giveThresholdForElectrodesMovie(serverObj, stimEle, recEle, movie)
         % Returns spike detection threshold for specified SE-RE-amplitude

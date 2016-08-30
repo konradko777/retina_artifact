@@ -33,7 +33,29 @@ amplitudeValues = zeros(nOfAmps, 1);
 for i = 1: nOfAmps
     amplitudeValues(i) = movieAmpDict(2*i - 1);    
 end
-%% plotting 
+%% plotting before correction
+
+neurondIdx = 3;
+hold on
+grid on
+plot(amplitudeValues, onlySpikeMat(neurondIdx,:) ./ 50, 'b.-', 'markersize', 25)
+% plot(amplitudeValues, transformedOnlySpikeMat(neurondIdx,:), 'g.-', 'markersize', 25)
+% plot(amplitudeValues, onlySpikeMat(neurondIdx,:) ./ 50, 'b.-', 'markersize', 25)
+ylabel('Stimulation Efficiency', 'fontsize', 30)
+xlabel('Stimulation Current [\muA]', 'fontsize', 30)
+set(gca, 'ytick', 0:.1:1)
+set(gca, 'yticklabels', get(gca, 'ytick') * 100)
+ylabel('Stimulation Efficiency [%]', 'fontsize', 30)
+xlabel('Stimulation Current [\muA]', 'fontsize', 30)
+set(gca, 'fontsize', 25)
+xlim([.2, 3.95])
+ylim([-.1 1.1])
+lh = legend('Algorithm efficiency function', 'Corrected efficiency function', 'location', 'northwest');
+set(lh, 'fontsize', 18)
+
+
+
+%% plotting
 
 neurondIdx = 3;
 hold on
@@ -50,7 +72,8 @@ xlabel('Stimulation Current [\muA]', 'fontsize', 30)
 set(gca, 'fontsize', 25)
 xlim([.2, 3.95])
 ylim([-.1 1.1])
-legend('Algorithm efficiency function', 'Corrected efficiency function', 'location', 'northwest')
+lh = legend('Algorithm efficiency function', 'Corrected efficiency function', 'location', 'northwest');
+set(lh, 'fontsize', 18)
 
 %% plotting
 
@@ -71,9 +94,9 @@ amplitudeValuesDense = amplitudeValues(1):0.01:amplitudeValues(end);
 coeffs = lsqcurvefit(@sigmoidalFunc, [1, 0], amplitudeValues, transformedOnlySpikeMat(i,:)');
 hold on
 grid on
-plot(amplitudeValues, transformedOnlySpikeMat(i,:), 'g.', 'markersize', 20)
+plot(amplitudeValues, transformedOnlySpikeMat(i,:), 'g.', 'markersize', 25)
 plot(amplitudeValuesDense, sigmoidalFunc(coeffs, amplitudeValuesDense), 'linewidth', 2)
-plot(amplitudeValues, transformedOnlySpikeMat(i,:), 'g.', 'markersize', 20)
+plot(amplitudeValues, transformedOnlySpikeMat(i,:), 'g.', 'markersize', 25)
 ylim([-.01, 1.01])
 set(gca, 'ytick', 0:.1:1)
 set(gca, 'yticklabels', get(gca, 'ytick') * 100)
@@ -82,8 +105,8 @@ xlabel('Stimulation Current [\muA]', 'fontsize', 30)
 set(gca, 'fontsize', 25)
 xlim([.2, 3.95])
 ylim([-.1 1.1])
-legend('Experiment data points', 'Fitted efficiency function', 'location', 'northwest')
-
+lh = legend('Experiment data points', 'Fitted efficiency function', 'location', 'northwest');
+set(lh, 'fontsize', 18)
 
 %% getting coeff from the fit
 amplitudeValuesDense = amplitudeValues(1):0.01:amplitudeValues(end);

@@ -23,19 +23,20 @@ classdef DataSet < handle
     
     methods
         %% DataSet constructor
-        function dataSetObj = DataSet(dataPath, tracesNumberLimit, ...
+        function dataSetObj = DataSet(dataPath, visionPath, tracesNumberLimit, ...
                 nElectrodes, samplingRate, spikeDetectionMethod, movies, applicationRange)
         % A DataSet object constructor.
         % Input:
         %     dataPath(String): a path to location where files with sliced
         %         data (each file regarding different stimulation pattern
         %         and current amplitude) are stored.
+        %     visionPath(String): path to Vision java library.
         %     tracesNumberLimit(Int): number of repetition of stimulus on one
         %         electrode for given current
         %     nElectrodes(Int): numbe of electrodes used in experimental
         %         setup
         %     samplingRate(Float): a sampling rate with which data was
-        %         collected
+        %         collected in Hz
         %     spikeDetectionMethod(String): currently when equals to
         %         'largestQT' it passes information about largest QT in
         %         stability island to SpikeDetectionThresholdServer object.
@@ -43,6 +44,7 @@ classdef DataSet < handle
         %     movies(Vector(Int)): integers that are used to describe
         %         consecutive stimulation amplitudes in names of files in
         %         location specified by dataPath parameter.
+            javaaddpath(visionPath);
             dataSetObj.dataPath = dataPath;
             dataSetObj.spikeDetectionMethod = spikeDetectionMethod;
             dataSetObj.movies = movies;
@@ -136,13 +138,13 @@ classdef DataSet < handle
             end
         end
         %% estimating stimulation artifacts
-        function artIDs = getArtIDsAndLargestQT(dataSetObj, pattern, movie, ele)
-            traces = getTracesForPatternMovieEle(dataSetObj, pattern, movie, ele);
-            [artIDs, largestQT] = dataSetObj.artClassifierObject.getArtIDsAndLargestQT(traces);
-            if dataSetObj.spikeDetectionMethod == 'largestQT'
-                dataSetObj.thresholdServerObj.saveThresForElectrodesMovie(pattern, ele, movie, largestQT);
-            end
-        end% ta funkcja niepotrzebna?
+%         function artIDs = getArtIDsAndLargestQT(dataSetObj, pattern, movie, ele)
+%             traces = getTracesForPatternMovieEle(dataSetObj, pattern, movie, ele);
+%             [artIDs, largestQT] = dataSetObj.artClassifierObject.getArtIDsAndLargestQT(traces);
+%             if dataSetObj.spikeDetectionMethod == 'largestQT'
+%                 dataSetObj.thresholdServerObj.saveThresForElectrodesMovie(pattern, ele, movie, largestQT);
+%             end
+%         end% ta funkcja niepotrzebna?
         function meanArt = getMeanArtForMovie(dataSetObj, traces, pattern, movie, ele)
         % Returns stimulation artifact estimate for given
         % pattern(stimulation electrode ID), amplitude ID (movie) and
@@ -163,8 +165,15 @@ classdef DataSet < handle
         % Output:
         %     meanArt(Vector<Float>): a stimulation artifact estimate.
             [artIDs, largestQT] = dataSetObj.artClassifierObject.getArtIDsAndLargestQT(traces);
-            meanArt = mean(traces(artIDs, :));
-            if dataSetObj.spikeDetectionMethod == 'largestQT'
+            if isempty(artIDs)
+                meanArt = zeros(1, size(traces, 2));
+                disp('Stability island not found. Unable to estimate stimulation artifact');
+            elseif length(artIDs) == 1
+                meanArt = traces(artIDs, :);
+            else
+                meanArt = mean(traces(artIDs, :));
+            end
+            if strcmp(dataSetObj.spikeDetectionMethod, 'largestQT')
                 dataSetObj.thresholdServerObj.saveThresForElectrodesMovie(pattern, ele, movie, largestQT);
             end
         end
@@ -174,7 +183,7 @@ classdef DataSet < handle
         % Input:
         %     allTracesCellMat(CellVector<Array<<Float>>): a cell matrix that in each cell
         %         contains all traces registered with given stimulation
-        %         amplitued. Reuturned by getAllTracesForSEREpair method.
+        %         amplitude. Reuturned by getAllTracesForSEREpair method.
         %     pattern(Int): integer representation of pattern of
         %         electrode(s) used to stimulate retina.
         %     movies(Vector<Int>): integer representation of current amplitudes
@@ -192,6 +201,7 @@ classdef DataSet < handle
                 traces = allTracesCellMat{i};
                 meanArtsMat{i} = getMeanArtForMovie(dataSetObj, traces, pattern, movie, ele);
             end
+            
             meanArtsMat = cell2mat(meanArtsMat);
         end
         % Spike Detection methods
@@ -305,11 +315,12 @@ classdef DataSet < handle
         %         are spiecified in dataSetObj.movies field.
         %     spikeMatrix(Array<Float>): a matrix where each row
         %         represents detected spike with columns as follows:
-        %             1) movie(Int): ID of stimulation amplitude,
+        %             1) ampitude(Float): amplitude of stimulation current
+        %                 in nA.
         %             2) repetition(Int):  i, if spike occured as response
         %                 to ith stimulus, 
-        %             3) sample(Float): interpolated index of a sample when
-        %                 voltage reached half amplitude of a spike.
+        %             3) timing(Float): interpolated timing of spike (when
+        %                  voltage reaches the half-amplitude of the spike)
             allTraces = dataSetObj.getAllTracesForSEREpair(stimEle, recEle, dataSetObj.movies);
             artifactEstimations = dataSetObj.getMeanArtsForMovies(allTraces, stimEle, recEle, dataSetObj.movies);
             spikeMatrix = dataSetObj.detectSpikesForAllMovies(allTraces, artifactEstimations, stimEle, recEle, dataSetObj.movies);
@@ -368,7 +379,7 @@ classdef DataSet < handle
         %         current
             [stimElectrodes, optimalAmps] = ... 
                 dataSetObj.estimateBestStimAmpsForClosestEles(recEle, recEle);
-            minAmp, minIdx = min(optimalAmps);
+            [minAmp, minIdx] = min(optimalAmps);
             if minAmp == Inf
                 disp('Minimal required efficiency was not achieved on neither electrode')
                 bestEle = 0;
@@ -448,9 +459,14 @@ classdef DataSet < handle
         %     optimalAmp(Float): stimulation current amplitude in
         %         nanoamperes returned by stimulatiom amplitude selector
         %         object.
-            [interpretationVec,  ~, spikeMatrix] = ...
+            [interpretationVec,  artifactEstimates, spikeMatrix] = ...
                 dataSetObj.analyzeSEREpair(stimEle, recEle);
-            optimalAmp = dataSetObj.selectOptimalStimAmp(spikeMatrix, interpretationVec);
+            if dataSetObj.allArtifactsEstimated(artifactEstimates)
+                optimalAmp = dataSetObj.selectOptimalStimAmp(spikeMatrix, interpretationVec);
+            else
+                optimalAmp = Inf;
+                disp('Not all artifacts were estimated. Fitting not possible.')
+            end
         end
         %% helper methods
         function neighbouringEles = giveNeigbouringEles(dataSetObj, electrode)
@@ -499,9 +515,13 @@ classdef DataSet < handle
         %     transedSpikeMat(Array<Float>): columns in format:
         %     Amplitude(nA), repetition, time of spike onset in
         %     miliseconds.
-            transedSpikeMat = spikeMat;
-            transedSpikeMat(:,3) = dataSetObj.changeSampleToMiliseconds(spikeMat(:,3));
-            transedSpikeMat(:,1) = dataSetObj.currentAmps(transedSpikeMat(:,1));           
+            if isempty(spikeMat) % no spikes were found
+                transedSpikeMat = spikeMat;
+            else
+                transedSpikeMat = spikeMat;
+                transedSpikeMat(:,3) = dataSetObj.changeSampleToMiliseconds(spikeMat(:,3));
+                transedSpikeMat(:,1) = dataSetObj.currentAmps(transedSpikeMat(:,1));
+            end
         end
         function spikeDetectedVec = transformSpikeMatToVec(dataSetObj, spikeMat, movies)
         % Extracts information from spike matrix returned by detectSpikesForAllMovies 
@@ -522,6 +542,13 @@ classdef DataSet < handle
             for i = 1:length(movies)
                 spikeDetectedVec(i) = sum(spikeMat(:,1) == i);
             end
+        end
+        function allEstimated = allArtifactsEstimated(dataSetObj, artifactEstimatesMatrix)
+            allEstimatedVec = zeros(size(artifactEstimatesMatrix, 1), 1);
+            for i = 1:length(allEstimatedVec)
+                allEstimatedVec(i) = any(artifactEstimatesMatrix(i,:));
+            end
+            allEstimated = all(allEstimatedVec);
         end
     end
 end

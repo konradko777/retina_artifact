@@ -51,14 +51,20 @@ classdef SimpleSpikeDetector < abstractSpikeDetector
             if spikeDetected
                 while i > 0
                     if truncated(i) > (minValue / 2);
+                        i = i - 1;
                         break
                     end
                     i = i - 1;
                 end
-            greaterThanHalfMinIdx = i + detectorObj.samplesOfInterest(1) - 1;
-            smallerThanHalfMinIdx = greaterThanHalfMinIdx + 1;
-            indices = [greaterThanHalfMinIdx smallerThanHalfMinIdx];
-            halfMinIdx = interp1(subtracted(indices), indices, minValue / 2);    
+                greaterThanHalfMinIdx = i + detectorObj.samplesOfInterest(1);
+                smallerThanHalfMinIdx = greaterThanHalfMinIdx + 1;
+                indices = [greaterThanHalfMinIdx smallerThanHalfMinIdx];
+                values = subtracted(indices);
+                if values(1) < (minValue / 2) % half amplitude is probably reached during sitmulation
+                    halfMinIdx = 0;
+                else
+                    halfMinIdx = interp1(subtracted(indices), indices, minValue / 2);
+                end
             end
         end
     end

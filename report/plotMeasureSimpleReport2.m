@@ -8,7 +8,7 @@ function plotMeasureSimpleReport2(measureMatrix, currentThreshold, currentThresh
     %selectedThresholds(array<ints> - indices of selected thresholds
     %markselectedThresholds - whether to mark selected thersholds
     %movie
-    FONTSIZE = 20;
+    FONTSIZE = 18;
     imagesc2(measureMatrix, caxisLim);
     setTickLabels(thresholdValues, FONTSIZE - 5);
     middle = length(thresholdValues) / 2 + .5;

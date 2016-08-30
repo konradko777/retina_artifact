@@ -20,7 +20,9 @@ classdef StimAmpSelector < handle
             selectorObj.desiredEff = desiredEff;
         end
         function optimalAmp = selectAmplitude(selectorObj, amplitudes, efficacies)
-            coefficients = lsqcurvefit(@selectorObj.sigmoidalFunc, [1, 0], amplitudes, efficacies);
+            opts = optimset('Display','off');
+            coefficients = lsqcurvefit(@selectorObj.sigmoidalFunc, [1, 0], amplitudes, ...
+                efficacies, [-Inf, -Inf], [Inf, Inf], opts);
             optimalAmp = selectorObj.sigmoidalInv(coefficients, selectorObj.desiredEff);
         end
         
