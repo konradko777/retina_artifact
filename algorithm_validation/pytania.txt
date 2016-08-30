@@ -1,2 +1,0 @@
-metody analizy ? co to znaczy ( linkage, prevArtifact)
-'E:\praca\dane_2016_08\2014-11-05-3\data001\elecResp_n2405_p162.mat' artefakty z dupy?
