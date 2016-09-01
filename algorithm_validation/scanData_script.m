@@ -1,6 +1,7 @@
 %% reading data from elecResp files
 
 DATA_PATH = 'E:\praca\dane_2016_08\2014-11-05-3\data001\';
+% DATA_PATH = 'E:\praca\dane_2016_08\2012-09-24-3\data008\';
 succes = {};
 i = 0;
 j = 0;
@@ -13,7 +14,7 @@ patternMovies = {};
 for file_ = dir([DATA_PATH 'elecResp*'])'
     i = i + 1;
     load([DATA_PATH file_.name])
-    if any(elecResp.analysis.successRates)
+    if ~any(elecResp.analysis.successRates)
         j = j + 1;
         noi{j} = elecResp;
 %         [tokens, ~] = regexp(file_.name, 'n(\d+)_p(\d)+', 'tokens','match');
@@ -49,7 +50,7 @@ MINIMAL_CLUSTER = 3; % minimal number of thresholds do declare stability
 STABILITY_THRESHOLD = 30; % threshold used when determining stability island.
 % Mind its indirect connection to SAMPLES_OF_INTEREST
 QTs = 10:5:100; % quantization thresholds used when lookin for optimal one.
-APPLICATION_RANGE = [4 19]; % TODO: zautomatyzowac z uwagi na rozna ilosc stymulacji? %%%%%%%%%%%
+APPLICATION_RANGE = [4 21]; % TODO: zautomatyzowac z uwagi na rozna ilosc stymulacji? %%%%%%%%%%%
 FULL_EFF_APPROX = .92;
 %%
 VISION_PATH = 'C:\studia\dane_skrypty_wojtek\ks_functions\Vision.jar';
@@ -61,6 +62,9 @@ QTClassifier =  QTArtClassifier(SAMPLES_OF_INTEREST, ART_TO_PRUNE, ...
 spikeDetector = SimpleSpikeDetector(SAMPLES_OF_INTEREST);
 interpreter = resultInterpreter(APPLICATION_RANGE);
 ampSelectorObj = StimAmpSelector(FULL_EFF_APPROX);
+
+%%
+clear dataSet
 %% attaching 
 dataSet.attachThresServerObj(spikeDetectionThresholdServer);
 dataSet.attachArtClassifierObj(QTClassifier);
@@ -83,5 +87,37 @@ plot(meanArt, 'linewidth', 2, 'color', 'r')
 spikesDetectedMat = dataSet.detectSpikesForMovie(traces, meanArt, -40, movie);
 %%
 [interpretationVector, artifactEstimates, spikeMatrix] = dataSet.analyzeSEREpair(pattern, recEle);
+
 %%
+compareClassifications(spikeMatrix, interpretationVector, noi{1})
+%%
+confusionMatrices = {};
+for i = 1:size(noi, 2)
+    i
+    pattern = noi{i}.stimInfo.patternNo;
+    recEle = noi{i}.cells.recElec;
+    clear dataSet
+    dataSet = DataSet(DATA_PATH, VISION_PATH, noi{i}, ...
+        64, 'spikedetectionmethod', APPLICATION_RANGE);
+    dataSet.attachThresServerObj(spikeDetectionThresholdServer);
+    dataSet.attachArtClassifierObj(QTClassifier);
+    dataSet.attachSpikeDetectorObj(spikeDetector);
+    dataSet.attachInerpreterObj(interpreter)
+    dataSet.attachStimAmpSelectorObj(ampSelectorObj);
+    [interpretationVector, artifactEstimates, spikeMatrix] = dataSet.analyzeSEREpair(pattern, recEle);
+    confMat = compareClassifications(spikeMatrix, interpretationVector, noi{i})
+    confusionMatrices{i} = confMat;
+end
+
+%%
+j = 8;
 clear dataSet
+dataSet = DataSet(DATA_PATH, VISION_PATH, noi{j}, ...
+    64, 'spikedetectionmethod', APPLICATION_RANGE);
+dataSet.attachThresServerObj(spikeDetectionThresholdServer);
+dataSet.attachArtClassifierObj(QTClassifier);
+dataSet.attachSpikeDetectorObj(spikeDetector);
+dataSet.attachInerpreterObj(interpreter)
+dataSet.attachStimAmpSelectorObj(ampSelectorObj);
+dataSet.plotAllMoviesWithClass(noi{j})
+% allTraces = dataSet.getAllTracesForSEREpair(pattern, recEle, noi{3}.stimInfo.movieNos);

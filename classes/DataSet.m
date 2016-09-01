@@ -141,6 +141,69 @@ classdef DataSet < handle
                 allTracesCell{i} = dataSetObj.getTracesForPatternMovieEle(stimEle, movie, ele);
             end
         end
+        
+        %% plotting funcitons
+        function plotAllMovies(dataSetObj, elecRespStruct)
+            stimEle = elecRespStruct.stimInfo.patternNo;
+            recEle = elecRespStruct.cells.recElec;
+            movies = elecRespStruct.stimInfo.movieNos;
+            posDict = generatePositionDict3(4, 10, .01, .01);
+            allTraces = dataSetObj.getAllTracesForSEREpair(stimEle, recEle, movies);
+            min_ = min(cellfun(@(x) min(x(:)) , allTraces));
+            max_ = max(cellfun(@(x) max(x(:)) , allTraces));
+            for i=1:length(allTraces)
+                subplot('Position', posDict{i})
+                plot(allTraces{i}', 'k')
+                ylim([min_ - 20, max_ + 20])
+            end
+        end
+        
+        function plotAllMoviesWithClass(dataSetObj, elecRespStruct)
+            pattern = elecRespStruct.stimInfo.patternNo;
+            recEle = elecRespStruct.cells.recElec;
+            movies = elecRespStruct.stimInfo.movieNos;
+            [interpretationVector, artifactEstimates, spikeMatrix] = dataSetObj.analyzeSEREpair(pattern, recEle);
+            posDict = generatePositionDict3(4, 10, .01, .01);
+            allTraces = dataSetObj.getAllTracesForSEREpair(pattern, recEle, movies);
+            min_ = min(cellfun(@(x) min(x(:)) , allTraces));
+            max_ = max(cellfun(@(x) max(x(:)) , allTraces));
+            for movieIdx = 1:length(movies)
+                cmpVec = dataSetObj.createComparisonVecFromSpikeMat(movieIdx, spikeMatrix,...
+                    interpretationVector, elecRespStruct.stimInfo.nPulses);
+                manualClassVec = logical(elecRespStruct.analysis.latencies{movieIdx});
+                bothSpikes = (cmpVec & manualClassVec);
+                bothArts = (~(cmpVec | manualClassVec));
+                manualArtsAlgSpikes = (cmpVec & ~manualClassVec);
+                manualSpikesAlgArts = (~cmpVec & manualClassVec);
+                subplot('Position', posDict{movieIdx})
+                hold on
+                plot(allTraces{movieIdx}(bothSpikes,:)', 'g')
+                plot(allTraces{movieIdx}(bothArts,:)', 'r')
+                plot(allTraces{movieIdx}(manualArtsAlgSpikes,:)', 'm')
+                plot(allTraces{movieIdx}(manualSpikesAlgArts,:)', 'c')
+                ylim([min_ - 20, max_ + 20])
+                if movieIdx ~= length(movies)
+                    set(gca, 'yticklabel', '')
+                    set(gca, 'xticklabel', '')
+                end
+            end
+            set(gca, 'YAxisLocation', 'right')
+        end
+        
+        function cmpVec = createComparisonVecFromSpikeMat(dataSetObj, movieIdx, spikeMatrix,...
+            interpretationVec, nPulsesVec)
+            nPulses = nPulsesVec(movieIdx);
+            cmpVec = zeros(nPulses,1);
+            if interpretationVec(movieIdx)
+                for i = 1:size(spikeMatrix, 1)
+                    if spikeMatrix(i,1) == movieIdx
+                        cmpVec(spikeMatrix(i,2)) = 1;
+                    end
+                end
+            else
+                cmpVec = ones(nPulses,1);
+            end
+        end
         %% estimating stimulation artifacts
 
         function meanArt = getMeanArtForMovie(dataSetObj, traces, pattern, movie, ele)
@@ -324,7 +387,7 @@ classdef DataSet < handle
             spikeMatrix = dataSetObj.detectSpikesForAllMovies(allTraces, artifactEstimations, stimEle, recEle, dataSetObj.movies);
             spikeDetectedVec = dataSetObj.transformSpikeMatToVec(spikeMatrix, dataSetObj.movies);
             interpretationVec = logical(dataSetObj.interpretResults(spikeDetectedVec));
-            spikeMatrix = dataSetObj.translateSpikeMatrix(spikeMatrix);
+%             spikeMatrix = dataSetObj.translateSpikeMatrix(spikeMatrix);
         end
         %% find best electrode methods
         function fullEffIdx = giveMaximumEfficiencyAmpIdx(dataSetObj)
